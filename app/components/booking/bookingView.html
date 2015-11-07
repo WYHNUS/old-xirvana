@@ -1,0 +1,10 @@
+<div id="bookPage">
+	<h>{{title}}</h>
+
+	<form novalidate class="booking-form">
+    	Name: <input type="text" ng-model="user.name" /><br />
+	    Email: <input type="email" ng-model="user.email" /><br />
+
+	    <input type="submit" ng-click="submitBooking(user)" value="Book" />
+	</form>
+</div>
