@@ -6,6 +6,10 @@ angular.module("xirvanaApp")
 		$scope.title = "XIRVANA Booking";
 
 		$scope.submitBooking = function(user) {
-			ConnectDBService.addBooking(user);
+			ConnectDBService.booking("insert", user)
+				.then(function(response) {
+					console.log("booking successful");
+					console.log(response);
+				});
 		}
 	}]);
