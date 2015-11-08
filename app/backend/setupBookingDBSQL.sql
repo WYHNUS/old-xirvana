@@ -9,6 +9,7 @@ create table Users (
 
 -- check DB
 show tables;
+desc Users;
 select * from Users;
 
 -- reset DB

@@ -33,14 +33,25 @@ if ($requestObject) {
 		 	case "insert":
 		 		$name = $requestObject["name"];
 		 		$email = $requestObject["email"];
-		 		$sql = "INSERT INTO Users (name,email) VALUES (:name,:email)";
+
+		 		// check if can insert into DB
+		 		$sql = "SELECT * from Users WHERE email=:email";
 		 		$q = $conn->prepare($sql);
-		 		$value = $q->execute(array(":name" => $name, ":email" => $email));
-		 		if ($value) {
-				    echo print_jsonp_callback("{\"status\":\"success\",\"message\":\"Insert into table successful\"}");
-		 		} else {
-	    			echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Insert into table failed: {$q->errorCode()}\"}");
-		 		}
+		 		$q->execute(array(":email" => $email));
+		 		if ($q->rowCount() === 0) {
+		 			// can insert
+			 		$sql = "INSERT INTO Users (name,email) VALUES (:name,:email)";
+			 		$q = $conn->prepare($sql);
+			 		$value = $q->execute(array(":name" => $name, ":email" => $email));
+			 		if ($value) {
+					    echo print_jsonp_callback("{\"status\":\"success\",\"message\":\"Insert into table successful\"}");
+			 		} else {
+		    			echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Insert into table failed: {$q->errorCode()}\"}");
+			 		}
+			 	} else {
+			 		// duplicate email address (primary key)
+			 		echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Email has already been registered.\"}");
+			 	}
 		 		break;
 		 	
 		 	default:
