@@ -5,7 +5,9 @@
     	Name: <input type="text" ng-model="user.name" /><br />
 	    Email: <input type="email" ng-model="user.email" /><br />
 
-	    <input type="submit" ng-click="submitBooking(user)" value="Book" />
+	    <input type="submit" ng-click="submitBooking(user)" value="Register" />
 	    <p>{{response}}</p>
 	</form>
+	
+	<div ui-calendar="uiConfig.calendar" ng-model="eventSources"></div>
 </div>

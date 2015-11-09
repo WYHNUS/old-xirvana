@@ -35,7 +35,7 @@ if ($requestObject) {
 		 		$email = $requestObject["email"];
 
 		 		// check if can insert into DB
-		 		$sql = "SELECT * from Users WHERE email=:email";
+		 		$sql = "SELECT * FROM Users WHERE email=:email";
 		 		$q = $conn->prepare($sql);
 		 		$q->execute(array(":email" => $email));
 		 		if ($q->rowCount() === 0) {

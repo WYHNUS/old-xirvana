@@ -2,15 +2,15 @@
 
 angular.module("xirvanaApp")
 	.service("ConnectDBService", ["$http", "$q", function($http, $q) {
-		function booking(cmd, bookingInfo) {
-			console.log("bookingInfo : ");
-			console.log(bookingInfo);
+		function booking(cmd, registrationInfo) {
+			console.log("registration info : ");
+			console.log(registrationInfo);
 
 			// submit form to back-end php file
 			var deferred = $q.defer();
             var params = new FormData();
             params.append("command", cmd);
-            params.append("object", JSON.stringify(bookingInfo));
+            params.append("object", JSON.stringify(registrationInfo));
             $http.post("app/backend/connectBookingDB.php", params, {
               	transformRequest: angular.identity,
               	headers: {"Content-Type": undefined}

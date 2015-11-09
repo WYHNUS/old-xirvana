@@ -1,6 +1,6 @@
 'use strict';
 
-var xirvana = angular.module("xirvanaApp", ["ui.router"]);
+var xirvana = angular.module("xirvanaApp", ["ui.router", "ui.calendar", "smart-table"]);
 
 xirvana.config(function($stateProvider, $urlRouterProvider) {
 	$stateProvider
