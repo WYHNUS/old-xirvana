@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="default" defaultIdMethod="native">
+  <table name="Booking" idMethod="native" phpName="Booking">
+    <column name="id" phpName="Id" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="bookingTime" phpName="Bookingtime" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="255"/>
+    <column name="description" phpName="Description" type="VARCHAR" size="2048"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="MakeBooking" idMethod="native" phpName="Makebooking">
+    <column name="email" phpName="Email" type="VARCHAR" size="255" primaryKey="true" required="true" defaultValue=""/>
+    <column name="id" phpName="Id" type="INTEGER" primaryKey="true" required="true" defaultValue="0"/>
+    <foreign-key foreignTable="Users" name="MakeBooking_ibfk_1" onDelete="CASCADE">
+      <reference local="email" foreign="email"/>
+    </foreign-key>
+    <foreign-key foreignTable="Booking" name="MakeBooking_ibfk_2" onDelete="CASCADE">
+      <reference local="id" foreign="id"/>
+    </foreign-key>
+    <index name="id">
+      <index-column name="id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+  <table name="Users" idMethod="native" phpName="Users">
+    <column name="email" phpName="Email" type="VARCHAR" size="255" primaryKey="true" required="true"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="255" required="true"/>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>
