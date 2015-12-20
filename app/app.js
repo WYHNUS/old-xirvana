@@ -17,6 +17,13 @@ xirvana.config(function($stateProvider, $urlRouterProvider) {
 			templateUrl: "/app/components/booking/bookingView.html",
 			resolve: {},
 			controller: "bookingController"
+		})
+        .state("app", {
+			url: "/app",
+			title: "Xirvana Weekend App",
+			templateUrl: "/app/components/app/appView.html",
+			resolve: {},
+			controller: "appController"
 		});
 
 	$urlRouterProvider.otherwise("/");
