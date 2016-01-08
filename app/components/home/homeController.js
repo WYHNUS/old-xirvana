@@ -14,4 +14,9 @@ angular.module("xirvanaApp")
 				console.log("direct to weekend app state");
 				$state.go("app");
 			}
+            
+            $scope.directJavaOJ = function () {
+                console.log("direct to Online Judgement state");
+                $state.go("onlineJudgement");
+            }
 		}]);

@@ -24,7 +24,14 @@ xirvana.config(function($stateProvider, $urlRouterProvider) {
 			templateUrl: "/app/components/app/appView.html",
 			resolve: {},
 			controller: "appController"
-		});
+		})
+        .state("onlineJudgement", {
+            url: "/speciallyMadeForHeYang",
+            title: "Xirvana Online Judgement",
+            templateUrl: "/app/components/onlineJudgement/ojView.html",
+			resolve: {},
+			controller: "ojController"
+        });
 
 	$urlRouterProvider.otherwise("/");
 });
