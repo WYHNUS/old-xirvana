@@ -1,0 +1,3 @@
+Enter number of rows and columns: Enter values for 2D array:
+Row sums: [6, 15, 24, 33, 42]
+Column sums: [35, 40, 45]

@@ -1,0 +1,7 @@
+1st ball
+Enter colour, radius and centre: 2nd ball
+Enter colour, radius and centre: 3rd ball
+Enter colour, radius and centre: 
+1st and 2nd balls are not the same.
+The largest ball created is:
+[colour=blue, radius=81.3, centre=(70,63)]
