@@ -15,7 +15,7 @@ angular.module("xirvanaApp")
 				$state.go("app");
 			}
             
-            $scope.directJavaOJ = function () {
+            $scope.directOnlineJudgement = function () {
                 console.log("direct to Online Judgement state");
                 $state.go("onlineJudgement");
             }
