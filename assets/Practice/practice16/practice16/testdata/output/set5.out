@@ -1,0 +1,4 @@
+Enter number of elements in set A: Enter elements for set A: Enter number of elements in set B: Enter elements for set B: Set A: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+Set B: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+Set A is not a subset of set B.
+Set A is not equal to set B.

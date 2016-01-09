@@ -1,0 +1,19 @@
+key 317 hashed to 7
+Number of collisions = 0
+Hash table:
+7: 317, QBBFJFEEYXNVDNLOVKKRRKAGVTXNAO
+
+key 38 hashed to 7
+Number of collisions = 1
+Hash table:
+7: 317, QBBFJFEEYXNVDNLOVKKRRKAGVTXNAO
+15: 38, YDIQWDN
+
+key 7 hashed to 7
+Number of collisions = 1
+Hash table:
+7: 317, QBBFJFEEYXNVDNLOVKKRRKAGVTXNAO
+15: 38, YDIQWDN
+23: 7, CERICGMUBHS
+
+Total collisions = 2

@@ -1,0 +1,4 @@
+Enter 2 opposite vertices of 1st rectangle: Enter 2 opposite vertices of 2nd rectangle: 1st rectangle: [(3, -1); (15, 6)]
+2nd rectangle: [(9, 2); (19, 10)]
+They are not identical.
+Overlap area = 24
