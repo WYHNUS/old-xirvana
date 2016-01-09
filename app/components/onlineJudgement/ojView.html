@@ -1,3 +1,9 @@
 <div my-header></div>
-    <div my-pdf-display url="/assets/Practice/practice01/practice01.pdf"></div>
+<div ui-view>
+    <div id="practiceWrapper">
+    <li class="inlineList" ng-repeat="practice in practiceInfos">
+        <a ng-href="#/speciallyMadeForHeYang/{{practice.id}}">{{practice.name}}</a>
+    </li>
+    </div>
+</div>
 <div my-footer></div>

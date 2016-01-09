@@ -31,6 +31,15 @@ xirvana.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: "/app/components/onlineJudgement/ojView.html",
 			resolve: {},
 			controller: "ojController"
+        })
+        .state("onlineJudgement.detail", {
+            url: "/:id",
+            templateUrl: "/app/components/onlineJudgement/oj.detailView.html",
+            resolve: {},
+            controller: "ojDetailController",
+            onEnter: function(){
+                console.log("enter oj.detail");
+            }
         });
 
 	$urlRouterProvider.otherwise("/");
