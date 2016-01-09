@@ -46,7 +46,7 @@ module.directive("myPdfDisplay", function() {
                         };
                         page.render(renderContext);
                         
-                        document.getElementById("questionDisplay").appendChild(canvas);
+                        document.getElementById("question-display").appendChild(canvas);
                     });
                 }
            });
