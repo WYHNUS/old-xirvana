@@ -1,6 +1,6 @@
 'use strict';
 
-var xirvana = angular.module("xirvanaApp", ["ui.router", "ui.calendar", "smart-table"]);
+var xirvana = angular.module("xirvanaApp", ["ui.router", "ui.calendar", "smart-table", "ngFileUpload"]);
 
 xirvana.config(function($stateProvider, $urlRouterProvider) {
 	$stateProvider
@@ -36,10 +36,7 @@ xirvana.config(function($stateProvider, $urlRouterProvider) {
             url: "/:id",
             templateUrl: "/app/components/onlineJudgement/oj.detailView.html",
             resolve: {},
-            controller: "ojDetailController",
-            onEnter: function(){
-                console.log("enter oj.detail");
-            }
+            controller: "ojDetailController"
         });
 
 	$urlRouterProvider.otherwise("/");

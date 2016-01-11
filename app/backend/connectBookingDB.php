@@ -1,7 +1,6 @@
 <?php
-header('content-type: application/json; charset=utf-8');
-define("JSON_PRETTY_PRINT", 128);
 
+require_once 'printFormat.php';
 // setup the autoloading
 require_once '../../vendor/autoload.php';
 // setup Propel
@@ -9,14 +8,6 @@ require_once '../../generated-conf/config.php';
 
 $requestCommand = $_REQUEST["command"];
 $requestObject = json_decode($_REQUEST["object"], true);
-
-function print_jsonp_callback($result) {
-   global $jsonp_callback;
-   if(!is_string($result)) {
-	$result = json_encode($result, JSON_PRETTY_PRINT);
-   }
-   print $jsonp_callback ? "$jsonp_callback($result)" : $result;
-}
 
 if ($requestObject) {
 	if ($requestCommand) {
@@ -53,6 +44,5 @@ if ($requestObject) {
 } else {
     echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"No Object Specified\"}");
 }
-
 
 ?>
