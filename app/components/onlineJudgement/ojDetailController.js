@@ -16,10 +16,15 @@ angular.module("xirvanaApp")
             $scope.upload = function(file) {
                 Upload.upload({
                     url: "app/backend/onlineJudgementBackend.php",
-                    data: {file: file}
+                    data: {file: file,
+                          practiceName: $scope.practice.name}
                 }).then(function(response) {
-                    console.log("upload successful");
                     console.log(response);
+                    if (response.status == 200) {
+                        console.log("upload successful");
+                    } else {
+                        console.log("upload failed : " + response.message);
+                    }
                 }, function(response) {
                     console.log("upload error");
                 }, function(e) {
