@@ -20,10 +20,10 @@ angular.module("xirvanaApp")
                           practiceName: $scope.practice.name}
                 }).then(function(response) {
                     console.log(response);
-                    if (response.status == 200) {
+                    if (response.data.status == "ok") {
                         console.log("upload successful");
                     } else {
-                        console.log("upload failed : " + response.message);
+                        console.log("upload failed : " + response.data.message);
                     }
                 }, function(response) {
                     console.log("upload error");
