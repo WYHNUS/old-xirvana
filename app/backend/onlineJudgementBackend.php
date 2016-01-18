@@ -2,6 +2,13 @@
 
 require_once 'printFormat.php';
 
+function cleanup($dir) {
+    passthru($dir."rm *.*", $return_value);
+    if ($return_value != 0) {
+        error_log("clean up failed");
+    }
+}
+    
 // check if upload success
 if ($_FILES["file"]) {
     $saved_file_name = $_FILES["file"]["name"];
@@ -31,7 +38,7 @@ if ($_FILES["file"]) {
             // check if submitted java file passes all the test cases
             $input_dir = "../testdata/input/";
             $out_dir = "../testdata/output/";
-            $set_limit_cmd = "ulimit -v 4000; ulimit -t 2; ";
+            $set_limit_cmd = "ulimit -v 8000; ulimit -t 4; ";
             
             for ($test_index=1; $test_index<=$num_of_tests; $test_index++) {
                 $input_file = "in".$test_index.".in";
@@ -46,11 +53,13 @@ if ($_FILES["file"]) {
                     
                     if (count($outcome) != 0) {
                         print_jsonp_callback("{\"status\":\"fail\",\"message\":\"incorrect result\"}");
-                        exit();
+                        cleanup($change_to_tmp_dir);
+                        exit;
                     }
                 } else {
                     print_jsonp_callback("{\"status\":\"fail\",\"message\":\"run time error\"}");
-                    exit();
+                    cleanup($change_to_tmp_dir);
+                    exit;
                 }
             }
             
@@ -60,11 +69,7 @@ if ($_FILES["file"]) {
             print_jsonp_callback("{\"status\":\"fail\",\"message\":\"compilation error\"}");
         }
         
-        // clean up
-        passthru($change_to_tmp_dir."rm *.*", $return_value);
-        if ($return_value != 0) {
-            error_log("clean up failed");
-        }
+        cleanup($change_to_tmp_dir);
     } else {
         print_jsonp_callback("{\"status\":\"fail\",\"message\":\"fail to save input file\"}");
     }
