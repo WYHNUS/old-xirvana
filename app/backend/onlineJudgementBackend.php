@@ -12,6 +12,7 @@ if ($_FILES["file"]) {
     $program_name = substr($saved_file_name, 0, strlen($saved_file_name) - 5);
     $practice_dir = "../../assets/Practice/".$_REQUEST["practiceName"];
     $save_to_dir = $practice_dir."/tmp";
+    $change_to_tmp_dir = "cd ".$save_to_dir."; ";
     $program_full_path = $save_to_dir."/".$saved_file_name;
     
     $data = file_get_contents($_FILES["file"]["tmp_name"]);
@@ -28,7 +29,6 @@ if ($_FILES["file"]) {
             $num_of_tests = exec($change_to_input_dir.$get_num_cmd);
                 
             // check if submitted java file passes all the test cases
-            $change_to_tmp_dir = "cd ".$save_to_dir."; ";
             $input_dir = "../testdata/input/";
             $out_dir = "../testdata/output/";
             $set_limit_cmd = "ulimit -v 4000; ulimit -t 2; ";
