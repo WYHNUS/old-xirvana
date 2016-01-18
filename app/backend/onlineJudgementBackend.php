@@ -38,7 +38,7 @@ if ($_FILES["file"]) {
             // check if submitted java file passes all the test cases
             $input_dir = "../testdata/input/";
             $out_dir = "../testdata/output/";
-            $set_limit_cmd = "ulimit -v 8000; ulimit -t 4; ";
+            $set_limit_cmd = "ulimit -v 64000; ulimit -t 4; ";
             
             for ($test_index=1; $test_index<=$num_of_tests; $test_index++) {
                 $input_file = "in".$test_index.".in";
