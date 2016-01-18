@@ -43,14 +43,12 @@ if ($_FILES["file"]) {
 
                 if ($return_value === 0) {
                     $compare_cmd = "diff -b ".$tmp_out_file." ".$out_dir.$output_file;
-                    $result = exec($compare_cmd, $outcome);
-                    error_log($compare_cmd);
-                    error_log($result);
-                    error_log(count($outcome));
-//                    if () {
-//                        print_jsonp_callback("{\"status\":\"fail\",\"message\":\"incorrect result\"}");
-//                        exit();
-//                    }
+                    exec($change_to_tmp_dir.$compare_cmd, $outcome);
+                    
+                    if (count($outcome) != 0) {
+                        print_jsonp_callback("{\"status\":\"fail\",\"message\":\"incorrect result\"}");
+                        exit();
+                    }
                 } else {
                     print_jsonp_callback("{\"status\":\"fail\",\"message\":\"run time error\"}");
                     exit();
@@ -58,16 +56,16 @@ if ($_FILES["file"]) {
             }
             
             // pass all the test cases
-            print_jsonp_callback("{\"status\":\"ok\"}");
+            print_jsonp_callback("{\"status\":\"ok\",\"message\":\"successfully pass all test cases\"}");
         } else {
             print_jsonp_callback("{\"status\":\"fail\",\"message\":\"compilation error\"}");
         }
         
         // clean up
-//        passthru($change_to_tmp_dir."rm *.*", $return_value);
-//        if ($return_value != 0) {
-//            error_log("clean up failed");
-//        }
+        passthru($change_to_tmp_dir."rm *.*", $return_value);
+        if ($return_value != 0) {
+            error_log("clean up failed");
+        }
     } else {
         print_jsonp_callback("{\"status\":\"fail\",\"message\":\"fail to save input file\"}");
     }
