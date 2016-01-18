@@ -22,14 +22,19 @@ angular.module("xirvanaApp")
                     console.log(response);
                     if (response.data.status == "ok") {
                         console.log("upload successful");
+                        $scope.displayFeedback(response.data.message);
                     } else {
                         console.log("upload failed : " + response.data.message);
+                        $scope.displayFeedback(response.data.message);
                     }
                 }, function(response) {
                     console.log("upload error");
-                }, function(e) {
-                    var progressPercent = parseInt(100.0 * e.loaded / e.total);
-                    console.log("progress: " + progressPercent + "%");
+                    $scope.displayFeedback(response.data.message);
                 });
+            }
+            
+            $scope.displayFeedback = function(msg) {
+                $scope.ojfeedback = msg;
+                $scope.file = null;
             }
         }]);
