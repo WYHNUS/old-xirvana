@@ -1,7 +1,6 @@
 <?php
 
 require_once 'printFormat.php';
-require_once 'shellProcess.php';
 
 // check if upload success
 if ($_FILES["file"]) {
