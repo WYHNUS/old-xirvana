@@ -44,19 +44,21 @@ if ($_FILES["file"]) {
                 $input_file = "in".$test_index.".in";
                 $output_file = "out".$test_index.".out";
                 $tmp_out_file = "tmpout".$test_index.".out";
-                $exec_cmd = "java ".$program_name." < ".$input_dir.$input_file." > ".$tmp_out_file."; ";
-                passthru($change_to_tmp_dir.$set_limit_cmd.$exec_cmd, $return_value);
-
-                if ($return_value === 0) {
+                $exec_cmd = "java ".$program_name." < ".$input_dir.$input_file." > ".$tmp_out_file." 2>&1; ";
+                exec($change_to_tmp_dir.$set_limit_cmd.$exec_cmd, $exec_outcome);
+                
+                if (count($exec_outcome) == 0) {
                     $compare_cmd = "diff -b ".$tmp_out_file." ".$out_dir.$output_file;
-                    exec($change_to_tmp_dir.$compare_cmd, $outcome);
+                    exec($change_to_tmp_dir.$compare_cmd, $compare_outcome);
                     
-                    if (count($outcome) != 0) {
+                    if (count($compare_outcome) != 0) {
+                        error_log(print_r($compare_outcome, true));
                         print_jsonp_callback("{\"status\":\"fail\",\"message\":\"incorrect result\"}");
                         cleanup($change_to_tmp_dir);
                         exit;
                     }
                 } else {
+                    error_log(print_r($exec_outcome, true));
                     print_jsonp_callback("{\"status\":\"fail\",\"message\":\"run time error\"}");
                     cleanup($change_to_tmp_dir);
                     exit;

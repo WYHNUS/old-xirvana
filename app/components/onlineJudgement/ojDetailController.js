@@ -29,6 +29,7 @@ angular.module("xirvanaApp")
                     }
                 }, function(response) {
                     console.log("upload error");
+                    console.log(response);
                     $scope.displayFeedback(response.data.message);
                 });
             }
