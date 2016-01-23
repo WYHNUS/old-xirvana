@@ -38,13 +38,13 @@ if ($_FILES["file"]) {
             // check if submitted java file passes all the test cases
             $input_dir = "../testdata/input/";
             $out_dir = "../testdata/output/";
-            $set_limit_cmd = "ulimit -v 64000; ulimit -t 4; ";
+            $set_limit_cmd = "ulimit -t 2; ";
             
             for ($test_index=1; $test_index<=$num_of_tests; $test_index++) {
                 $input_file = "in".$test_index.".in";
                 $output_file = "out".$test_index.".out";
                 $tmp_out_file = "tmpout".$test_index.".out";
-                $exec_cmd = "java ".$program_name." < ".$input_dir.$input_file." > ".$tmp_out_file." 2>&1; ";
+                $exec_cmd = "java -Xmx128m ".$program_name." < ".$input_dir.$input_file." > ".$tmp_out_file." 2>&1; ";
                 exec($change_to_tmp_dir.$set_limit_cmd.$exec_cmd, $exec_outcome);
                 
                 if (count($exec_outcome) == 0) {
