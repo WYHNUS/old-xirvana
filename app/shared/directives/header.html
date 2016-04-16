@@ -2,16 +2,21 @@
     <div id="header-logo" ng-click="directMainPage()">Xirvana</div>
     <div id="header-login">
         <div ng-if="user">
-            <p>You are logged in</p>
+            <div class="header-button-wrapper">
+                <button id="logout-button" ng-click="logout()">Log out</button>
+            </div>
         </div>
         <div ng-if="!user">
             <div class="header-button-wrapper">
-                <button class="signup-button" ng-click="directSignUp()">Sign up</button>
+                <button id="signup-button" ng-click="directSignUp()">Sign up</button>
             </div>
             
             <div class="header-button-wrapper">
-                <button class="login-button" ng-click="showDropdown = !showDropdown">Log in</button>
+                <button id="login-button" ng-click="showDropdown = !showDropdown">Log in</button>
                 <div ng-show="showDropdown" class="dropdown-menu">
+                    <div id="signup-error" ng-if="loginError">
+                        <p>{{ loginError }}</p>
+                    </div>
                     <div class="dropdown-form">
                         <form ng-submit="login()">
                           <div class="form-group">

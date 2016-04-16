@@ -16,7 +16,12 @@ module.directive("myHeader", function() {
         scope: {user: "="},
         templateUrl: "/app/shared/directives/header.html",
         controller: ["$scope", "$state", "ConnectDBService", function($scope, $state, ConnectDBService) {
+            $scope.user = "";
+            if (sessionStorage.currentUser) {
+                $scope.user = sessionStorage.currentUser;
+            } 
             $scope.showDropdown = false;
+            $scope.loginError = "";
             
             $scope.directMainPage = function() {
                  $state.go("main");
@@ -28,6 +33,8 @@ module.directive("myHeader", function() {
             }
             
             $scope.login = function() {
+                $scope.loginError = "";
+                
                 var userInfo = $("form").serializeArray().reduce(function(obj, item){
                     obj[item.name] = item.value;
                     return obj;
@@ -36,9 +43,19 @@ module.directive("myHeader", function() {
                 
                 ConnectDBService.login(userInfo).then(function(response) {
                     console.log(response);
+                    $scope.showDropdown = false;
+                    // keep user's email in session
+                    $scope.user = userInfo["user_email"];
+                    sessionStorage.currentUser = $scope.user;
                 }, function(err) {
-                    console.log(err);
-                })
+                    $scope.loginError = err;
+                    console.log($scope.loginError);
+                });
+            }
+            
+            $scope.logout = function() {
+                $scope.user = "";
+                sessionStorage.clear();
             }
         }]
     }
