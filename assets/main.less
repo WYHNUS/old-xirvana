@@ -1,15 +1,10 @@
-#question-display {
-    canvas {
-        border:1px solid black;
-    }
-}
-
 .inline-list {
     display: inline-block;
 }
 
 .header {
-    margin: 20px 40px;
+    position: relative;
+    margin: 50px 50px;
     div {
         display: inline;
     }
@@ -21,12 +16,15 @@
     }
 }
 
-.footer {
-    margin: 20px 40px;
+html, body {
+   margin:0;
+   padding:0;
+   height:100%;
 }
 
 .main-container {
-    margin: 10px 30px;
+    margin: 50px 30px 40px;
+    min-height:100%;
     
     #home-page {
         #home-page-title {
@@ -43,6 +41,12 @@
         }
     }
     
+    #question-display {
+        canvas {
+            border:1px solid black;
+        }
+    }
+
     #practice-wrapper {
         li {
             margin: 20px 15px;
@@ -54,4 +58,11 @@
             display: inline;
         }
     }
+}
+
+.footer {
+    clear: both;
+    position: relative;
+    height: 40px;
+    margin-top: -40px;
 }
