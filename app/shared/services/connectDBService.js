@@ -9,9 +9,6 @@
 angular.module("xirvanaApp")
 	.service("ConnectDBService", ["$http", "$q", function($http, $q) {
 		function register(userInfo) {
-			console.log("registration info : ");
-			console.log(userInfo);
-
 			// submit form to back-end php file
 			var deferred = $q.defer();
             var params = new FormData();
@@ -21,7 +18,6 @@ angular.module("xirvanaApp")
               	transformRequest: angular.identity,
               	headers: {"Content-Type": undefined}
             }).success(function(data, status, headers, config) {
-            	console.log(data);
               	if (data == null) {
 					deferred.reject("data.error");
               	} else {
