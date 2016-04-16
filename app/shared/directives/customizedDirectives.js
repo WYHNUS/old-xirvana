@@ -17,12 +17,16 @@ module.directive("myHeader", function() {
         templateUrl: "/app/shared/directives/header.html",
         controller: ["$scope", "$state", function($scope, $state) {
             // behaviour goes here :)
-            $scope.directSignUp = function() {
-                console.log("direct sign up");
-                $state.go("signup")
+            $scope.directMainPage = function() {
+                 $state.go("main");
             }
             
-            $scope.login =function() {
+            $scope.directSignUp = function() {
+                console.log("direct sign up");
+                $state.go("signup");
+            }
+            
+            $scope.login = function() {
                 
             }
         }]
