@@ -11,6 +11,13 @@ xirvana.config(function($stateProvider, $urlRouterProvider) {
 			resolve: {},
 			controller: "homeController"
 		})
+        .state("signup", {
+			url: "/signup",
+			title: "Xirvana Signup",
+			templateUrl: "/app/components/signup/signup.html",
+			resolve: {},
+			controller: "signupController"
+		})
         .state("app", {
 			url: "/app",
 			title: "Xirvana Weekend App",

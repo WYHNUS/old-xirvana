@@ -15,8 +15,12 @@ module.directive("myHeader", function() {
         restirct: "A",
         scope: {user: "="},
         templateUrl: "/app/shared/directives/header.html",
-        controller: ["$scope", function($scope) {
+        controller: ["$scope", "$state", function($scope, $state) {
             // behaviour goes here :)
+            $scope.directSignUp = function() {
+                console.log("direct sign up");
+                $state.go("signup")
+            }
         }]
     }
 });

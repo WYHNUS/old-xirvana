@@ -1,4 +1,4 @@
-"user strict";
+"use strict";
 
 angular.module("xirvanaApp")
 	.service("ConnectDBService", ["$http", "$q", function($http, $q) {

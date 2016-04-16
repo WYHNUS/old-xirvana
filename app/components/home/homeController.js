@@ -1,4 +1,4 @@
-'user strict';
+'use strict';
 
 angular.module("xirvanaApp")
 	.controller("homeController", ["$scope", "$state", 
