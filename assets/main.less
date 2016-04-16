@@ -4,12 +4,26 @@
 
 .header {
     position: relative;
-    margin: 50px 50px;
+    margin: 50px 150px;
     div {
         display: inline;
     }
-    button {
+    .header-button-wrapper {
         float: right;
+        .dropdown-menu {
+            margin-top: 10px;
+            position: absolute;
+            clear: both;
+            .form-group {
+                display: block;
+                margin: 5px;
+            }
+            #login-submit {
+                position: relative;
+                display: block;
+                margin: 0 auto;
+            }
+        }
     }
     #header-logo {
         width: 100px;
@@ -64,5 +78,5 @@ html, body {
     clear: both;
     position: relative;
     height: 40px;
-    margin-top: -40px;
+    margin: -40px 150px 0;
 }

@@ -16,7 +16,8 @@ module.directive("myHeader", function() {
         scope: {user: "="},
         templateUrl: "/app/shared/directives/header.html",
         controller: ["$scope", "$state", function($scope, $state) {
-            // behaviour goes here :)
+            $scope.showDropdown = false;
+            
             $scope.directMainPage = function() {
                  $state.go("main");
             }
@@ -27,7 +28,7 @@ module.directive("myHeader", function() {
             }
             
             $scope.login = function() {
-                
+                console.log("login");
             }
         }]
     }
