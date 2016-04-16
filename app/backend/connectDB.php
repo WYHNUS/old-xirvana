@@ -6,15 +6,22 @@ require_once '../../vendor/autoload.php';
 // setup Propel
 require_once '../../generated-conf/config.php';
 
+/*
+    backend for connectDBService, and support function to:
+    1. register a new user
+    2. check if a user is registered
+*/
+
 $requestCommand = $_REQUEST["command"];
 $requestObject = json_decode($_REQUEST["object"], true);
 
 if ($requestObject) {
 	if ($requestCommand) {
 		switch ($requestCommand) {
-		 	case "insert":
-		 		$name = $requestObject["name"];
-		 		$email = $requestObject["email"];
+		 	case "register":
+		 		$name = $requestObject["user_name"];
+		 		$email = $requestObject["user_email"];
+                $pwd = $requestObject["user_password"];
                 
                 $q = new UsersQuery();
                 $tempUser = $q->findPK($email);
@@ -25,6 +32,7 @@ if ($requestObject) {
                     $user = new Users();
                     $user->setName($name);
                     $user->setEmail($email);
+                    $user->setPassword($pwd);
                     $status = $user->save();
                     if ($status) {
                        echo print_jsonp_callback("{\"status\":\"success\",\"message\":\"Insert into table successful\"}");
@@ -33,6 +41,22 @@ if ($requestObject) {
                     }
                 }
 		 		break;
+                
+            case "login":
+		 		$email = $requestObject["user_email"];
+                $pwd = $requestObject["user_password"];
+                
+                $q = new UsersQuery();
+                $tempUser = $q->findPK($email);
+                if ($tempUser) {
+                    // user exists
+                    
+                    // todo: check pwd
+                } else {
+                    // user does not exist
+                    echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Email or password is invalid.\"}");
+                }
+                break;
 		 	
 		 	default:
 		 		# code...

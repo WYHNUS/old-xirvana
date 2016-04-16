@@ -1,17 +1,23 @@
 "use strict";
 
+/*
+    service support function to:
+    1. register a new user
+    2. check if a user is registered
+*/
+
 angular.module("xirvanaApp")
 	.service("ConnectDBService", ["$http", "$q", function($http, $q) {
-		function booking(cmd, registrationInfo) {
+		function register(userInfo) {
 			console.log("registration info : ");
-			console.log(registrationInfo);
+			console.log(userInfo);
 
 			// submit form to back-end php file
 			var deferred = $q.defer();
             var params = new FormData();
-            params.append("command", cmd);
-            params.append("object", JSON.stringify(registrationInfo));
-            $http.post("app/backend/connectBookingDB.php", params, {
+            params.append("command", "register");
+            params.append("object", JSON.stringify(userInfo));
+            $http.post("app/backend/connectDB.php", params, {
               	transformRequest: angular.identity,
               	headers: {"Content-Type": undefined}
             }).success(function(data, status, headers, config) {
@@ -32,6 +38,6 @@ angular.module("xirvanaApp")
 		}
 
 		return {
-			booking : booking
+			register : register
 		}
 	}]);
