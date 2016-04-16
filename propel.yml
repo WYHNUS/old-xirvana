@@ -1,7 +1,7 @@
 propel:
     database:
         connections:
-            default:
+            xirvana:
                 adapter: mysql
                 dsn: mysql:host=localhost;port=8086;dbname=xirvana
                 user: root

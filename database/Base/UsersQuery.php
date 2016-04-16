@@ -10,7 +10,6 @@ use Map\UsersTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
-use Propel\Runtime\ActiveQuery\ModelJoin;
 use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
@@ -22,9 +21,11 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildUsersQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method     ChildUsersQuery orderByName($order = Criteria::ASC) Order by the name column
+ * @method     ChildUsersQuery orderByPassword($order = Criteria::ASC) Order by the password column
  *
  * @method     ChildUsersQuery groupByEmail() Group by the email column
  * @method     ChildUsersQuery groupByName() Group by the name column
+ * @method     ChildUsersQuery groupByPassword() Group by the password column
  *
  * @method     ChildUsersQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildUsersQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -34,33 +35,24 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUsersQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildUsersQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildUsersQuery leftJoinMakebooking($relationAlias = null) Adds a LEFT JOIN clause to the query using the Makebooking relation
- * @method     ChildUsersQuery rightJoinMakebooking($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Makebooking relation
- * @method     ChildUsersQuery innerJoinMakebooking($relationAlias = null) Adds a INNER JOIN clause to the query using the Makebooking relation
- *
- * @method     ChildUsersQuery joinWithMakebooking($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Makebooking relation
- *
- * @method     ChildUsersQuery leftJoinWithMakebooking() Adds a LEFT JOIN clause and with to the query using the Makebooking relation
- * @method     ChildUsersQuery rightJoinWithMakebooking() Adds a RIGHT JOIN clause and with to the query using the Makebooking relation
- * @method     ChildUsersQuery innerJoinWithMakebooking() Adds a INNER JOIN clause and with to the query using the Makebooking relation
- *
- * @method     \MakebookingQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
- *
  * @method     ChildUsers findOne(ConnectionInterface $con = null) Return the first ChildUsers matching the query
  * @method     ChildUsers findOneOrCreate(ConnectionInterface $con = null) Return the first ChildUsers matching the query, or a new ChildUsers object populated from the query conditions when no match is found
  *
  * @method     ChildUsers findOneByEmail(string $email) Return the first ChildUsers filtered by the email column
- * @method     ChildUsers findOneByName(string $name) Return the first ChildUsers filtered by the name column *
+ * @method     ChildUsers findOneByName(string $name) Return the first ChildUsers filtered by the name column
+ * @method     ChildUsers findOneByPassword(string $password) Return the first ChildUsers filtered by the password column *
 
  * @method     ChildUsers requirePk($key, ConnectionInterface $con = null) Return the ChildUsers by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUsers requireOne(ConnectionInterface $con = null) Return the first ChildUsers matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildUsers requireOneByEmail(string $email) Return the first ChildUsers filtered by the email column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUsers requireOneByName(string $name) Return the first ChildUsers filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildUsers requireOneByPassword(string $password) Return the first ChildUsers filtered by the password column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildUsers[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildUsers objects based on current ModelCriteria
  * @method     ChildUsers[]|ObjectCollection findByEmail(string $email) Return ChildUsers objects filtered by the email column
  * @method     ChildUsers[]|ObjectCollection findByName(string $name) Return ChildUsers objects filtered by the name column
+ * @method     ChildUsers[]|ObjectCollection findByPassword(string $password) Return ChildUsers objects filtered by the password column
  * @method     ChildUsers[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -75,7 +67,7 @@ abstract class UsersQuery extends ModelCriteria
      * @param     string $modelName The phpName of a model, e.g. 'Book'
      * @param     string $modelAlias The alias for the model in this query, e.g. 'b'
      */
-    public function __construct($dbName = 'default', $modelName = '\\Users', $modelAlias = null)
+    public function __construct($dbName = 'xirvana', $modelName = '\\Users', $modelAlias = null)
     {
         parent::__construct($dbName, $modelName, $modelAlias);
     }
@@ -153,7 +145,7 @@ abstract class UsersQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT email, name FROM Users WHERE email = :p0';
+        $sql = 'SELECT email, name, password FROM Users WHERE email = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_STR);
@@ -302,76 +294,32 @@ abstract class UsersQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \Makebooking object
+     * Filter the query on the password column
      *
-     * @param \Makebooking|ObjectCollection $makebooking the related object to use as filter
-     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     * Example usage:
+     * <code>
+     * $query->filterByPassword('fooValue');   // WHERE password = 'fooValue'
+     * $query->filterByPassword('%fooValue%'); // WHERE password LIKE '%fooValue%'
+     * </code>
      *
-     * @return ChildUsersQuery The current query, for fluid interface
-     */
-    public function filterByMakebooking($makebooking, $comparison = null)
-    {
-        if ($makebooking instanceof \Makebooking) {
-            return $this
-                ->addUsingAlias(UsersTableMap::COL_EMAIL, $makebooking->getEmail(), $comparison);
-        } elseif ($makebooking instanceof ObjectCollection) {
-            return $this
-                ->useMakebookingQuery()
-                ->filterByPrimaryKeys($makebooking->getPrimaryKeys())
-                ->endUse();
-        } else {
-            throw new PropelException('filterByMakebooking() only accepts arguments of type \Makebooking or Collection');
-        }
-    }
-
-    /**
-     * Adds a JOIN clause to the query using the Makebooking relation
-     *
-     * @param     string $relationAlias optional alias for the relation
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     * @param     string $password The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildUsersQuery The current query, for fluid interface
      */
-    public function joinMakebooking($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function filterByPassword($password = null, $comparison = null)
     {
-        $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('Makebooking');
-
-        // create a ModelJoin object for this join
-        $join = new ModelJoin();
-        $join->setJoinType($joinType);
-        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-        if ($previousJoin = $this->getPreviousJoin()) {
-            $join->setPreviousJoin($previousJoin);
+        if (null === $comparison) {
+            if (is_array($password)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $password)) {
+                $password = str_replace('*', '%', $password);
+                $comparison = Criteria::LIKE;
+            }
         }
 
-        // add the ModelJoin to the current object
-        if ($relationAlias) {
-            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-            $this->addJoinObject($join, $relationAlias);
-        } else {
-            $this->addJoinObject($join, 'Makebooking');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use the Makebooking relation Makebooking object
-     *
-     * @see useQuery()
-     *
-     * @param     string $relationAlias optional alias for the relation,
-     *                                   to be used as main alias in the secondary query
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return \MakebookingQuery A secondary query class using the current class as primary query
-     */
-    public function useMakebookingQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        return $this
-            ->joinMakebooking($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Makebooking', '\MakebookingQuery');
+        return $this->addUsingAlias(UsersTableMap::COL_PASSWORD, $password, $comparison);
     }
 
     /**

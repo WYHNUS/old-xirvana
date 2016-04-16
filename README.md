@@ -3,12 +3,17 @@
 Developed using Angular framework, PHP backend with ORM Propel to connect MySQL database.
 
 ##Update database schema
-Upon change of database scheme , run command: 
+Upon change of database scheme, run command: 
 - php composer.phar dump-autoload
-- sql:build
-- sql:insert
+- vendor/bin/propel sql:build
+- vendor/bin/propel sql:insert
 
-Basic functions supported by the website:
+##Generate Model Classes
+- vendor/bin/propel model:build
+
+##Runtime Connection Settings
+- vendor/bin/propel config:convert
+
+
+#Basic functions supported by the website:
 1. user registration
-2. show approved calendar events
-3. registered users can send booking/consultation request

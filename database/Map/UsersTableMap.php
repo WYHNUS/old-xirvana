@@ -39,7 +39,7 @@ class UsersTableMap extends TableMap
     /**
      * The default database name for this class
      */
-    const DATABASE_NAME = 'default';
+    const DATABASE_NAME = 'xirvana';
 
     /**
      * The table name for this class
@@ -59,7 +59,7 @@ class UsersTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 2;
+    const NUM_COLUMNS = 3;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class UsersTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 2;
+    const NUM_HYDRATE_COLUMNS = 3;
 
     /**
      * the column name for the email field
@@ -80,6 +80,11 @@ class UsersTableMap extends TableMap
      * the column name for the name field
      */
     const COL_NAME = 'Users.name';
+
+    /**
+     * the column name for the password field
+     */
+    const COL_PASSWORD = 'Users.password';
 
     /**
      * The default string format for model objects of the related table
@@ -93,11 +98,11 @@ class UsersTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Email', 'Name', ),
-        self::TYPE_CAMELNAME     => array('email', 'name', ),
-        self::TYPE_COLNAME       => array(UsersTableMap::COL_EMAIL, UsersTableMap::COL_NAME, ),
-        self::TYPE_FIELDNAME     => array('email', 'name', ),
-        self::TYPE_NUM           => array(0, 1, )
+        self::TYPE_PHPNAME       => array('Email', 'Name', 'Password', ),
+        self::TYPE_CAMELNAME     => array('email', 'name', 'password', ),
+        self::TYPE_COLNAME       => array(UsersTableMap::COL_EMAIL, UsersTableMap::COL_NAME, UsersTableMap::COL_PASSWORD, ),
+        self::TYPE_FIELDNAME     => array('email', 'name', 'password', ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -107,11 +112,11 @@ class UsersTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Email' => 0, 'Name' => 1, ),
-        self::TYPE_CAMELNAME     => array('email' => 0, 'name' => 1, ),
-        self::TYPE_COLNAME       => array(UsersTableMap::COL_EMAIL => 0, UsersTableMap::COL_NAME => 1, ),
-        self::TYPE_FIELDNAME     => array('email' => 0, 'name' => 1, ),
-        self::TYPE_NUM           => array(0, 1, )
+        self::TYPE_PHPNAME       => array('Email' => 0, 'Name' => 1, 'Password' => 2, ),
+        self::TYPE_CAMELNAME     => array('email' => 0, 'name' => 1, 'password' => 2, ),
+        self::TYPE_COLNAME       => array(UsersTableMap::COL_EMAIL => 0, UsersTableMap::COL_NAME => 1, UsersTableMap::COL_PASSWORD => 2, ),
+        self::TYPE_FIELDNAME     => array('email' => 0, 'name' => 1, 'password' => 2, ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -133,6 +138,7 @@ class UsersTableMap extends TableMap
         // columns
         $this->addPrimaryKey('email', 'Email', 'VARCHAR', true, 255, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 255, null);
+        $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
     } // initialize()
 
     /**
@@ -140,23 +146,7 @@ class UsersTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Makebooking', '\\Makebooking', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':email',
-    1 => ':email',
-  ),
-), 'CASCADE', null, 'Makebookings', false);
     } // buildRelations()
-    /**
-     * Method to invalidate the instance pool of all tables related to Users     * by a foreign key with ON DELETE CASCADE
-     */
-    public static function clearRelatedInstancePool()
-    {
-        // Invalidate objects in related instance pools,
-        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
-        MakebookingTableMap::clearInstancePool();
-    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -301,9 +291,11 @@ class UsersTableMap extends TableMap
         if (null === $alias) {
             $criteria->addSelectColumn(UsersTableMap::COL_EMAIL);
             $criteria->addSelectColumn(UsersTableMap::COL_NAME);
+            $criteria->addSelectColumn(UsersTableMap::COL_PASSWORD);
         } else {
             $criteria->addSelectColumn($alias . '.email');
             $criteria->addSelectColumn($alias . '.name');
+            $criteria->addSelectColumn($alias . '.password');
         }
     }
 
