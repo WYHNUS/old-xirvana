@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module("xirvanaApp")
-    .controller("signupController", ["$scope", "ConnectDBService",
-        function($scope, ConnectDBService) {
+    .controller("signupController", ["$scope", "$window", "ConnectDBService",
+        function($scope, $window, ConnectDBService) {
             $scope.errorMsg = "";
             $scope.signup = function() {
                 $scope.errorMsg = "";
@@ -14,6 +14,7 @@ angular.module("xirvanaApp")
                 
                 ConnectDBService.register(userInfo).then(function(response) {
                     console.log(response);
+                    $window.history.back();
                 }, function(err) {
                     $scope.errorMsg = err;
                     console.log($scope.errorMsg);
