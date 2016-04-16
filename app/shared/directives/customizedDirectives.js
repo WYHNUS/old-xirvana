@@ -21,6 +21,10 @@ module.directive("myHeader", function() {
                 console.log("direct sign up");
                 $state.go("signup")
             }
+            
+            $scope.login =function() {
+                
+            }
         }]
     }
 });

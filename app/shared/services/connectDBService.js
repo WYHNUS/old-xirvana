@@ -8,12 +8,9 @@
 
 angular.module("xirvanaApp")
 	.service("ConnectDBService", ["$http", "$q", function($http, $q) {
-		function register(userInfo) {
+        function connect(params) {
 			// submit form to back-end php file
-			var deferred = $q.defer();
-            var params = new FormData();
-            params.append("command", "register");
-            params.append("object", JSON.stringify(userInfo));
+            var deferred = $q.defer();
             $http.post("app/backend/connectDB.php", params, {
               	transformRequest: angular.identity,
               	headers: {"Content-Type": undefined}
@@ -31,6 +28,13 @@ angular.module("xirvanaApp")
 				deferred.reject(data.error);
             });
             return deferred.promise;
+        }
+        
+		function register(userInfo) {
+            var params = new FormData();
+            params.append("command", "register");
+            params.append("object", JSON.stringify(userInfo));
+            return connect(params);
 		}
 
 		return {
