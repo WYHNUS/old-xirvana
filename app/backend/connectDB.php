@@ -35,7 +35,7 @@ if ($requestObject) {
                     $user->setPassword($pwd);
                     $status = $user->save();
                     if ($status) {
-                       echo print_jsonp_callback("{\"status\":\"success\",\"message\":\"Insert into table successful\"}");
+                       echo print_jsonp_callback("{\"status\":\"success\",\"message\":\"Insert into table successful.\"}");
                     } else {
                         echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Insert into table failed: {$q->errorCode()}\"}");
                     }
@@ -49,9 +49,13 @@ if ($requestObject) {
                 $q = new UsersQuery();
                 $tempUser = $q->findPK($email);
                 if ($tempUser) {
-                    // user exists
-                    
-                    // todo: check pwd
+                    // user exists, check pwd
+                    if ($tempUser->getPassword() === $pwd) {
+                        echo print_jsonp_callback("{\"status\":\"success\",\"message\":\"User information correct.\"}");
+                    } else {
+                        // wrong password
+                        echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Email or password is invalid.\"}");
+                    }
                 } else {
                     // user does not exist
                     echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Email or password is invalid.\"}");

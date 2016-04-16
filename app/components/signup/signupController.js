@@ -14,8 +14,8 @@ angular.module("xirvanaApp")
                 
                 ConnectDBService.register(userInfo).then(function(response) {
                     console.log(response);
-                }, function(response) {
-                    $scope.errorMsg = response;
+                }, function(err) {
+                    $scope.errorMsg = err;
                     console.log($scope.errorMsg);
                 });
             }

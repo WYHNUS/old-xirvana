@@ -15,7 +15,7 @@ module.directive("myHeader", function() {
         restirct: "A",
         scope: {user: "="},
         templateUrl: "/app/shared/directives/header.html",
-        controller: ["$scope", "$state", function($scope, $state) {
+        controller: ["$scope", "$state", "ConnectDBService", function($scope, $state, ConnectDBService) {
             $scope.showDropdown = false;
             
             $scope.directMainPage = function() {
@@ -28,7 +28,17 @@ module.directive("myHeader", function() {
             }
             
             $scope.login = function() {
-                console.log("login");
+                var userInfo = $("form").serializeArray().reduce(function(obj, item){
+                    obj[item.name] = item.value;
+                    return obj;
+                }, {});
+                console.log(userInfo);
+                
+                ConnectDBService.login(userInfo).then(function(response) {
+                    console.log(response);
+                }, function(err) {
+                    console.log(err);
+                })
             }
         }]
     }

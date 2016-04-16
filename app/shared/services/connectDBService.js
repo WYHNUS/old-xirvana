@@ -36,8 +36,16 @@ angular.module("xirvanaApp")
             params.append("object", JSON.stringify(userInfo));
             return connect(params);
 		}
+        
+        function login(userInfo) {
+            var params = new FormData();
+            params.append("command", "login");
+            params.append("object", JSON.stringify(userInfo));
+            return connect(params);
+		}
 
 		return {
-			register : register
+			register : register,
+            login : login
 		}
 	}]);
