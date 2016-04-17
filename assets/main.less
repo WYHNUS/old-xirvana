@@ -5,11 +5,11 @@
 .row-block {
     display: block;
     > div {
-        display: inline-block
+        display: inline-block;
     }
 }
 .col-block {
-    display: inline;
+    display: inline-block;
     > div {
         display: block;
     }
@@ -109,16 +109,23 @@ html, body {
             margin-bottom: 0;
             text-align: center;
         }
-        .img-wrapper {
-            margin: 30px;
-            display: inline;
-            #protrait-pic {
-                max-width: 35%;
-                height: auto;
+        #bio-info {
+            max-width: 45%;
+            .img-wrapper {
+                margin: 30px;
+                #protrait-pic {
+                    max-width: 100%;
+                    height: auto;
+                }
+            }
+            > div {
+                margin: 30px;
+                p {
+                }
             }
         }
         #bio-intro {
-            max-width: 55%;
+            max-width: 45%;
             > div {
                 margin: 30px;
                 p {
