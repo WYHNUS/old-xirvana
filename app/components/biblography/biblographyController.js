@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module("xirvanaApp")
-	.controller("appController", ["$scope", 
+	.controller("biblographyController", ["$scope", 
     function($scope) {
         
     }]);

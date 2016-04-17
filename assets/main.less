@@ -2,6 +2,21 @@
     display: inline-block;
 }
 
+.row-block {
+    display: block;
+    > div {
+        display: inline-block
+    }
+}
+.col-block {
+    display: inline;
+    > div {
+        display: block;
+    }
+}
+
+.silver-background {background-color: rgb(238, 238, 238)}
+
 .header {
     position: relative;
     margin: 50px 150px;
@@ -70,6 +85,27 @@ html, body {
     .file-upload-form {
         div, button {
             display: inline;
+        }
+    }
+    
+    #biblography {
+        .img-wrapper {
+            margin: 30px;
+            display: inline;
+            #protrait-pic {
+                max-width: 35%;
+                height: auto;
+            }
+        }
+        #bio-intro {
+            max-width: 55%;
+            
+            > div {
+                margin: 30px;
+                p {
+                    font-size: 15;
+                }
+            }
         }
     }
 }

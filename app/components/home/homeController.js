@@ -5,9 +5,9 @@ angular.module("xirvanaApp")
 		function($scope, $state) {
 			$scope.title = "XIRVANA";
             
-            $scope.directWeekendApp = function () {
-				console.log("direct to weekend app state");
-				$state.go("app");
+            $scope.directBiblography = function () {
+				console.log("direct to biblography state");
+				$state.go("biblography");
 			}
             
             $scope.directOnlineJudgement = function () {

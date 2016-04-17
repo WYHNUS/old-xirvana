@@ -18,12 +18,12 @@ xirvana.config(function($stateProvider, $urlRouterProvider) {
 			resolve: {},
 			controller: "signupController"
 		})
-        .state("app", {
-			url: "/app",
-			title: "Xirvana Weekend App",
-			templateUrl: "/app/components/app/appView.html",
+        .state("biblography", {
+			url: "/biblography",
+			title: "Xirvana Author",
+			templateUrl: "/app/components/biblography/biblographyView.html",
 			resolve: {},
-			controller: "appController"
+			controller: "biblographyController"
 		})
         .state("onlineJudgement", {
             url: "/speciallyMadeForHeYang",
