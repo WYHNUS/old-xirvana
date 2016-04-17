@@ -15,6 +15,21 @@
     }
 }
 
+.table {
+    thead td {
+        font-weight: bold;
+        background-color: #ffffff;
+    }
+    td {
+        padding: 8px;
+        vertical-align: top;
+        border-top: 1px solid #ddd;
+    }
+    tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+}
+
 .silver-background {background-color: rgb(238, 238, 238)}
 
 .header {
@@ -52,7 +67,7 @@ html, body {
 }
 
 .main-container {
-    margin: 50px 150px 40px;
+    margin: 50px 150px 80px;
     min-height:100%;
     
     #home-page {
@@ -89,6 +104,11 @@ html, body {
     }
     
     #biblography {
+        > .row-block {margin-bottom: 50px;}
+        .bio-sub-title {
+            margin-bottom: 0;
+            text-align: center;
+        }
         .img-wrapper {
             margin: 30px;
             display: inline;
@@ -99,12 +119,21 @@ html, body {
         }
         #bio-intro {
             max-width: 55%;
-            
             > div {
                 margin: 30px;
                 p {
                     font-size: 15;
                 }
+            }
+        }
+        .course-table-wrapper {
+            max-width: 45%;
+            margin: 0 20px;
+            .table-name {
+                text-align: center;
+            }
+            .course-header {
+                min-width: 75px;
             }
         }
     }

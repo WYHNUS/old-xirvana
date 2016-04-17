@@ -19,6 +19,41 @@
         </div>
     </div>
 
-    <div>
+    <div class="row-block">
+        <h1 class="bio-sub-title">Courses Taken</h1>
+        <div id="cs-moduels" class="col-block course-table-wrapper">
+            <h3 class="table-name">CS Courses</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>#</td>
+                        <td class="course-header">Course ID</td>
+                        <td class="course-header">Course Title</td>
+                    </tr>
+                </thead>
+                <tr ng-repeat="course in csModulesEnrolled">
+                    <td>{{ $index+1 }}</td>
+                    <td>{{ course.code }}</td>
+                    <td>{{ course.name }}</td>
+                </tr>
+            </table>
+        </div>
+        <div id="math-moduels" class="col-block course-table-wrapper">
+            <h3 class="table-name">Math Courses</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>#</td>
+                        <td class="course-header">Course ID</td>
+                        <td class="course-header">Course Title</td>
+                    </tr>
+                </thead>
+                <tr ng-repeat="course in mathModulesEnrolled">
+                    <td>{{ $index+1 }}</td>
+                    <td>{{ course.code }}</td>
+                    <td>{{ course.name }}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
