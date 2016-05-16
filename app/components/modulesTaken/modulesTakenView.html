@@ -11,3 +11,29 @@
         <input id="signup-submit" type="submit" value="Retrieve"/>
     </div>
 </form>
+
+<div id="taken-modules-wrapper">
+    <div ng-repeat="semModules in takenModules">
+        <div class="course-table-wrapper">
+            <h3 class="table-name">{{ semModules.semester }}</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>#</td>
+                        <td class="course-header course-id">Course ID</td>
+                        <td class="course-header course-title">Course Title</td>
+                        <td class="course-header course-mc">MCs</td>
+                        <td class="course-header course-grade">Grade</td>
+                    </tr>
+                </thead>
+                <tr ng-repeat="course in semModules.module_info">
+                    <td>{{ $index+1 }}</td>
+                    <td>{{ course.code }}</td>
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.MC }}</td>
+                    <td>{{ course.grade }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
