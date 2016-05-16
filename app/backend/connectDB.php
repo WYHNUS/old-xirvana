@@ -45,7 +45,6 @@ if ($requestObject) {
             case "login":
 		 		$email = $requestObject["user_email"];
                 $pwd = $requestObject["user_password"];
-                
                 $q = new UsersQuery();
                 $tempUser = $q->findPK($email);
                 if ($tempUser) {

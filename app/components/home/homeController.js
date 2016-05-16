@@ -10,6 +10,11 @@ angular.module("xirvanaApp")
 				$state.go("biblography");
 			}
             
+            $scope.directNUSTakenModulesCrawler = function () {
+                console.log("direct to NUS taken modules crawler state");
+                $state.go("takenModuleCrawler");
+            }
+            
             $scope.directOnlineJudgement = function () {
                 console.log("direct to Online Judgement state");
                 $state.go("onlineJudgement");

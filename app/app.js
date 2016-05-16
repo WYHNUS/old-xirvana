@@ -25,6 +25,13 @@ xirvana.config(function($stateProvider, $urlRouterProvider) {
 			resolve: {},
 			controller: "biblographyController"
 		})
+        .state("takenModuleCrawler", {
+            url: "/nusTakenModules",
+            title: "NUS taken modules crawler",
+            templateUrl: "/app/components/modulesTaken/modulesTakenView.html",
+            resolve: {},
+            controller: "modulesTakenController"
+        })
         .state("onlineJudgement", {
             url: "/speciallyMadeForHeYang",
             title: "Xirvana Online Judgement",
