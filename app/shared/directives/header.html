@@ -1,7 +1,8 @@
 <div class="header">
     <div id="header-logo" ng-click="directMainPage()">Xirvana</div>
     <div id="header-login">
-        <div ng-if="user">
+        <div id="login-user-wrapper" ng-if="user">
+            <p>Hello {{username}} !</p>
             <div class="header-button-wrapper">
                 <button id="logout-button" ng-click="logout()">Log out</button>
             </div>

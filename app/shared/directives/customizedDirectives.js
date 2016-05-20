@@ -17,8 +17,10 @@ module.directive("myHeader", function() {
         templateUrl: "/app/shared/directives/header.html",
         controller: ["$scope", "$state", "ConnectDBService", function($scope, $state, ConnectDBService) {
             $scope.user = "";
-            if (sessionStorage.currentUser) {
-                $scope.user = sessionStorage.currentUser;
+            if (sessionStorage.currentUserPK && sessionStorage.currentUserName) {
+                console.log(sessionStorage.currentUserName);
+                $scope.user = sessionStorage.currentUserPK;
+                $scope.username = sessionStorage.currentUserName;
             } 
             $scope.showDropdown = false;
             $scope.loginError = "";
@@ -44,9 +46,11 @@ module.directive("myHeader", function() {
                 ConnectDBService.login(userInfo).then(function(response) {
                     console.log(response);
                     $scope.showDropdown = false;
+                    $scope.user = userInfo.user_email;
+                    $scope.username = response.username;
                     // keep user's email in session
-                    $scope.user = userInfo["user_email"];
-                    sessionStorage.currentUser = $scope.user;
+                    sessionStorage.currentUserPK = $scope.user;
+                    sessionStorage.currentUserName = $scope.username;
                 }, function(err) {
                     $scope.loginError = err;
                     console.log($scope.loginError);

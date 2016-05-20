@@ -45,15 +45,13 @@ if ($requestObject) {
             case "login":
 		 		$email = $requestObject["user_email"];
                 $pwd = $requestObject["user_password"];
-                error_log("should be printed 1");
                 $q = new UsersQuery();
-                error_log("should be printed 2");
                 $tempUser = $q->findPK($email);
-                error_log("should be printed 3");
                 if ($tempUser) {
                     // user exists, check pwd
                     if ($tempUser->getPassword() === $pwd) {
-                        echo print_jsonp_callback("{\"status\":\"success\",\"message\":\"User information correct.\"}");
+                        $username = $tempUser->getName();
+                        echo print_jsonp_callback("{\"status\":\"success\",\"message\":\"User information correct.\",\"username\":\"$username\"}");
                     } else {
                         // wrong password
                         echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Email or password is invalid.\"}");
@@ -62,7 +60,6 @@ if ($requestObject) {
                     // user does not exist
                     echo print_jsonp_callback("{\"status\":\"fail\",\"error\":\"Email or password is invalid.\"}");
                 }
-                error_log("should be printed 4");
                 break;
 		 	
 		 	default:
