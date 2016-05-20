@@ -3,7 +3,7 @@ propel:
         connections:
             xirvana:
                 adapter: mysql
-                dsn: mysql:host=localhost;port=8086;dbname=xirvana
+                dsn: mysql:host=127.0.0.1;dbname=xirvana
                 user: root
                 password: Wyh1993~!@
                 settings:
