@@ -12,6 +12,10 @@
     </div>
 </form>
 
+<div ng-if="errorMsg">
+    <p class="error-msg">{{ errorMsg }}</p>
+</div>
+
 <div id="taken-modules-wrapper">
     <div ng-repeat="semModules in takenModules">
         <div class="course-table-wrapper">
