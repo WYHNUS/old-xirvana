@@ -37,7 +37,7 @@ module.directive("myHeader", function() {
             $scope.login = function() {
                 $scope.loginError = "";
                 
-                var userInfo = $("form").serializeArray().reduce(function(obj, item){
+                var userInfo = $("#login-form").serializeArray().reduce(function(obj, item){
                     obj[item.name] = item.value;
                     return obj;
                 }, {});

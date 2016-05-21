@@ -7,7 +7,7 @@ angular.module("xirvanaApp")
             $scope.signup = function() {
                 $scope.errorMsg = "";
                 
-                var userInfo = $("form").serializeArray().reduce(function(obj, item){
+                var userInfo = $("#signup-form").serializeArray().reduce(function(obj, item){
                     obj[item.name] = item.value;
                     return obj;
                 }, {});
