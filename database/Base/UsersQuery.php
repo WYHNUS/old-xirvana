@@ -10,6 +10,7 @@ use Map\UsersTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
+use Propel\Runtime\ActiveQuery\ModelJoin;
 use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\PropelException;
@@ -34,6 +35,48 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUsersQuery leftJoinWith($relation) Adds a LEFT JOIN clause and with to the query
  * @method     ChildUsersQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildUsersQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
+ *
+ * @method     ChildUsersQuery leftJoinDebtRelatedByCreditor($relationAlias = null) Adds a LEFT JOIN clause to the query using the DebtRelatedByCreditor relation
+ * @method     ChildUsersQuery rightJoinDebtRelatedByCreditor($relationAlias = null) Adds a RIGHT JOIN clause to the query using the DebtRelatedByCreditor relation
+ * @method     ChildUsersQuery innerJoinDebtRelatedByCreditor($relationAlias = null) Adds a INNER JOIN clause to the query using the DebtRelatedByCreditor relation
+ *
+ * @method     ChildUsersQuery joinWithDebtRelatedByCreditor($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the DebtRelatedByCreditor relation
+ *
+ * @method     ChildUsersQuery leftJoinWithDebtRelatedByCreditor() Adds a LEFT JOIN clause and with to the query using the DebtRelatedByCreditor relation
+ * @method     ChildUsersQuery rightJoinWithDebtRelatedByCreditor() Adds a RIGHT JOIN clause and with to the query using the DebtRelatedByCreditor relation
+ * @method     ChildUsersQuery innerJoinWithDebtRelatedByCreditor() Adds a INNER JOIN clause and with to the query using the DebtRelatedByCreditor relation
+ *
+ * @method     ChildUsersQuery leftJoinDebtRelatedByDebtor($relationAlias = null) Adds a LEFT JOIN clause to the query using the DebtRelatedByDebtor relation
+ * @method     ChildUsersQuery rightJoinDebtRelatedByDebtor($relationAlias = null) Adds a RIGHT JOIN clause to the query using the DebtRelatedByDebtor relation
+ * @method     ChildUsersQuery innerJoinDebtRelatedByDebtor($relationAlias = null) Adds a INNER JOIN clause to the query using the DebtRelatedByDebtor relation
+ *
+ * @method     ChildUsersQuery joinWithDebtRelatedByDebtor($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the DebtRelatedByDebtor relation
+ *
+ * @method     ChildUsersQuery leftJoinWithDebtRelatedByDebtor() Adds a LEFT JOIN clause and with to the query using the DebtRelatedByDebtor relation
+ * @method     ChildUsersQuery rightJoinWithDebtRelatedByDebtor() Adds a RIGHT JOIN clause and with to the query using the DebtRelatedByDebtor relation
+ * @method     ChildUsersQuery innerJoinWithDebtRelatedByDebtor() Adds a INNER JOIN clause and with to the query using the DebtRelatedByDebtor relation
+ *
+ * @method     ChildUsersQuery leftJoinTransactionRelatedByCreditor($relationAlias = null) Adds a LEFT JOIN clause to the query using the TransactionRelatedByCreditor relation
+ * @method     ChildUsersQuery rightJoinTransactionRelatedByCreditor($relationAlias = null) Adds a RIGHT JOIN clause to the query using the TransactionRelatedByCreditor relation
+ * @method     ChildUsersQuery innerJoinTransactionRelatedByCreditor($relationAlias = null) Adds a INNER JOIN clause to the query using the TransactionRelatedByCreditor relation
+ *
+ * @method     ChildUsersQuery joinWithTransactionRelatedByCreditor($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the TransactionRelatedByCreditor relation
+ *
+ * @method     ChildUsersQuery leftJoinWithTransactionRelatedByCreditor() Adds a LEFT JOIN clause and with to the query using the TransactionRelatedByCreditor relation
+ * @method     ChildUsersQuery rightJoinWithTransactionRelatedByCreditor() Adds a RIGHT JOIN clause and with to the query using the TransactionRelatedByCreditor relation
+ * @method     ChildUsersQuery innerJoinWithTransactionRelatedByCreditor() Adds a INNER JOIN clause and with to the query using the TransactionRelatedByCreditor relation
+ *
+ * @method     ChildUsersQuery leftJoinTransactionRelatedByDebtor($relationAlias = null) Adds a LEFT JOIN clause to the query using the TransactionRelatedByDebtor relation
+ * @method     ChildUsersQuery rightJoinTransactionRelatedByDebtor($relationAlias = null) Adds a RIGHT JOIN clause to the query using the TransactionRelatedByDebtor relation
+ * @method     ChildUsersQuery innerJoinTransactionRelatedByDebtor($relationAlias = null) Adds a INNER JOIN clause to the query using the TransactionRelatedByDebtor relation
+ *
+ * @method     ChildUsersQuery joinWithTransactionRelatedByDebtor($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the TransactionRelatedByDebtor relation
+ *
+ * @method     ChildUsersQuery leftJoinWithTransactionRelatedByDebtor() Adds a LEFT JOIN clause and with to the query using the TransactionRelatedByDebtor relation
+ * @method     ChildUsersQuery rightJoinWithTransactionRelatedByDebtor() Adds a RIGHT JOIN clause and with to the query using the TransactionRelatedByDebtor relation
+ * @method     ChildUsersQuery innerJoinWithTransactionRelatedByDebtor() Adds a INNER JOIN clause and with to the query using the TransactionRelatedByDebtor relation
+ *
+ * @method     \DebtQuery|\TransactionQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildUsers findOne(ConnectionInterface $con = null) Return the first ChildUsers matching the query
  * @method     ChildUsers findOneOrCreate(ConnectionInterface $con = null) Return the first ChildUsers matching the query, or a new ChildUsers object populated from the query conditions when no match is found
@@ -326,6 +369,298 @@ abstract class UsersQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UsersTableMap::COL_PASSWORD, $password, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \Debt object
+     *
+     * @param \Debt|ObjectCollection $debt the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUsersQuery The current query, for fluid interface
+     */
+    public function filterByDebtRelatedByCreditor($debt, $comparison = null)
+    {
+        if ($debt instanceof \Debt) {
+            return $this
+                ->addUsingAlias(UsersTableMap::COL_EMAIL, $debt->getCreditor(), $comparison);
+        } elseif ($debt instanceof ObjectCollection) {
+            return $this
+                ->useDebtRelatedByCreditorQuery()
+                ->filterByPrimaryKeys($debt->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByDebtRelatedByCreditor() only accepts arguments of type \Debt or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the DebtRelatedByCreditor relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUsersQuery The current query, for fluid interface
+     */
+    public function joinDebtRelatedByCreditor($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('DebtRelatedByCreditor');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'DebtRelatedByCreditor');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the DebtRelatedByCreditor relation Debt object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \DebtQuery A secondary query class using the current class as primary query
+     */
+    public function useDebtRelatedByCreditorQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinDebtRelatedByCreditor($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'DebtRelatedByCreditor', '\DebtQuery');
+    }
+
+    /**
+     * Filter the query by a related \Debt object
+     *
+     * @param \Debt|ObjectCollection $debt the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUsersQuery The current query, for fluid interface
+     */
+    public function filterByDebtRelatedByDebtor($debt, $comparison = null)
+    {
+        if ($debt instanceof \Debt) {
+            return $this
+                ->addUsingAlias(UsersTableMap::COL_EMAIL, $debt->getDebtor(), $comparison);
+        } elseif ($debt instanceof ObjectCollection) {
+            return $this
+                ->useDebtRelatedByDebtorQuery()
+                ->filterByPrimaryKeys($debt->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByDebtRelatedByDebtor() only accepts arguments of type \Debt or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the DebtRelatedByDebtor relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUsersQuery The current query, for fluid interface
+     */
+    public function joinDebtRelatedByDebtor($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('DebtRelatedByDebtor');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'DebtRelatedByDebtor');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the DebtRelatedByDebtor relation Debt object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \DebtQuery A secondary query class using the current class as primary query
+     */
+    public function useDebtRelatedByDebtorQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinDebtRelatedByDebtor($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'DebtRelatedByDebtor', '\DebtQuery');
+    }
+
+    /**
+     * Filter the query by a related \Transaction object
+     *
+     * @param \Transaction|ObjectCollection $transaction the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUsersQuery The current query, for fluid interface
+     */
+    public function filterByTransactionRelatedByCreditor($transaction, $comparison = null)
+    {
+        if ($transaction instanceof \Transaction) {
+            return $this
+                ->addUsingAlias(UsersTableMap::COL_EMAIL, $transaction->getCreditor(), $comparison);
+        } elseif ($transaction instanceof ObjectCollection) {
+            return $this
+                ->useTransactionRelatedByCreditorQuery()
+                ->filterByPrimaryKeys($transaction->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByTransactionRelatedByCreditor() only accepts arguments of type \Transaction or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the TransactionRelatedByCreditor relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUsersQuery The current query, for fluid interface
+     */
+    public function joinTransactionRelatedByCreditor($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('TransactionRelatedByCreditor');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'TransactionRelatedByCreditor');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the TransactionRelatedByCreditor relation Transaction object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \TransactionQuery A secondary query class using the current class as primary query
+     */
+    public function useTransactionRelatedByCreditorQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinTransactionRelatedByCreditor($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'TransactionRelatedByCreditor', '\TransactionQuery');
+    }
+
+    /**
+     * Filter the query by a related \Transaction object
+     *
+     * @param \Transaction|ObjectCollection $transaction the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUsersQuery The current query, for fluid interface
+     */
+    public function filterByTransactionRelatedByDebtor($transaction, $comparison = null)
+    {
+        if ($transaction instanceof \Transaction) {
+            return $this
+                ->addUsingAlias(UsersTableMap::COL_EMAIL, $transaction->getDebtor(), $comparison);
+        } elseif ($transaction instanceof ObjectCollection) {
+            return $this
+                ->useTransactionRelatedByDebtorQuery()
+                ->filterByPrimaryKeys($transaction->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByTransactionRelatedByDebtor() only accepts arguments of type \Transaction or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the TransactionRelatedByDebtor relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUsersQuery The current query, for fluid interface
+     */
+    public function joinTransactionRelatedByDebtor($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('TransactionRelatedByDebtor');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'TransactionRelatedByDebtor');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the TransactionRelatedByDebtor relation Transaction object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \TransactionQuery A secondary query class using the current class as primary query
+     */
+    public function useTransactionRelatedByDebtorQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinTransactionRelatedByDebtor($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'TransactionRelatedByDebtor', '\TransactionQuery');
     }
 
     /**

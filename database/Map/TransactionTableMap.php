@@ -2,8 +2,8 @@
 
 namespace Map;
 
-use \Users;
-use \UsersQuery;
+use \Transaction;
+use \TransactionQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'Users' table.
+ * This class defines the structure of the 'Transaction' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class UsersTableMap extends TableMap
+class TransactionTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class UsersTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.UsersTableMap';
+    const CLASS_NAME = '.Map.TransactionTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class UsersTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'Users';
+    const TABLE_NAME = 'Transaction';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Users';
+    const OM_CLASS = '\\Transaction';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Users';
+    const CLASS_DEFAULT = 'Transaction';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 3;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,22 +69,37 @@ class UsersTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 3;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
-     * the column name for the email field
+     * the column name for the id field
      */
-    const COL_EMAIL = 'Users.email';
+    const COL_ID = 'Transaction.id';
 
     /**
      * the column name for the name field
      */
-    const COL_NAME = 'Users.name';
+    const COL_NAME = 'Transaction.name';
 
     /**
-     * the column name for the password field
+     * the column name for the creditor field
      */
-    const COL_PASSWORD = 'Users.password';
+    const COL_CREDITOR = 'Transaction.creditor';
+
+    /**
+     * the column name for the debtor field
+     */
+    const COL_DEBTOR = 'Transaction.debtor';
+
+    /**
+     * the column name for the amount field
+     */
+    const COL_AMOUNT = 'Transaction.amount';
+
+    /**
+     * the column name for the time field
+     */
+    const COL_TIME = 'Transaction.time';
 
     /**
      * The default string format for model objects of the related table
@@ -98,11 +113,11 @@ class UsersTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Email', 'Name', 'Password', ),
-        self::TYPE_CAMELNAME     => array('email', 'name', 'password', ),
-        self::TYPE_COLNAME       => array(UsersTableMap::COL_EMAIL, UsersTableMap::COL_NAME, UsersTableMap::COL_PASSWORD, ),
-        self::TYPE_FIELDNAME     => array('email', 'name', 'password', ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'Creditor', 'Debtor', 'Amount', 'Time', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'creditor', 'debtor', 'amount', 'time', ),
+        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID, TransactionTableMap::COL_NAME, TransactionTableMap::COL_CREDITOR, TransactionTableMap::COL_DEBTOR, TransactionTableMap::COL_AMOUNT, TransactionTableMap::COL_TIME, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', 'creditor', 'debtor', 'amount', 'time', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -112,11 +127,11 @@ class UsersTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Email' => 0, 'Name' => 1, 'Password' => 2, ),
-        self::TYPE_CAMELNAME     => array('email' => 0, 'name' => 1, 'password' => 2, ),
-        self::TYPE_COLNAME       => array(UsersTableMap::COL_EMAIL => 0, UsersTableMap::COL_NAME => 1, UsersTableMap::COL_PASSWORD => 2, ),
-        self::TYPE_FIELDNAME     => array('email' => 0, 'name' => 1, 'password' => 2, ),
-        self::TYPE_NUM           => array(0, 1, 2, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Creditor' => 2, 'Debtor' => 3, 'Amount' => 4, 'Time' => 5, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'creditor' => 2, 'debtor' => 3, 'amount' => 4, 'time' => 5, ),
+        self::TYPE_COLNAME       => array(TransactionTableMap::COL_ID => 0, TransactionTableMap::COL_NAME => 1, TransactionTableMap::COL_CREDITOR => 2, TransactionTableMap::COL_DEBTOR => 3, TransactionTableMap::COL_AMOUNT => 4, TransactionTableMap::COL_TIME => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'creditor' => 2, 'debtor' => 3, 'amount' => 4, 'time' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -129,16 +144,19 @@ class UsersTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('Users');
-        $this->setPhpName('Users');
+        $this->setName('Transaction');
+        $this->setPhpName('Transaction');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Users');
+        $this->setClassName('\\Transaction');
         $this->setPackage('');
-        $this->setUseIdGenerator(false);
+        $this->setUseIdGenerator(true);
         // columns
-        $this->addPrimaryKey('email', 'Email', 'VARCHAR', true, 255, null);
+        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 255, null);
-        $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
+        $this->addForeignKey('creditor', 'Creditor', 'VARCHAR', 'Users', 'email', true, 255, null);
+        $this->addForeignKey('debtor', 'Debtor', 'VARCHAR', 'Users', 'email', true, 255, null);
+        $this->addColumn('amount', 'Amount', 'DECIMAL', true, null, null);
+        $this->addColumn('time', 'Time', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -146,34 +164,20 @@ class UsersTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('DebtRelatedByCreditor', '\\Debt', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('Transaction_Creditor', '\\Users', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':creditor',
     1 => ':email',
   ),
-), null, null, 'DebtsRelatedByCreditor', false);
-        $this->addRelation('DebtRelatedByDebtor', '\\Debt', RelationMap::ONE_TO_MANY, array (
+), null, null, null, false);
+        $this->addRelation('Transaction_Debtor', '\\Users', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':debtor',
     1 => ':email',
   ),
-), null, null, 'DebtsRelatedByDebtor', false);
-        $this->addRelation('TransactionRelatedByCreditor', '\\Transaction', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':creditor',
-    1 => ':email',
-  ),
-), null, null, 'TransactionsRelatedByCreditor', false);
-        $this->addRelation('TransactionRelatedByDebtor', '\\Transaction', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':debtor',
-    1 => ':email',
-  ),
-), null, null, 'TransactionsRelatedByDebtor', false);
+), null, null, null, false);
     } // buildRelations()
 
     /**
@@ -192,11 +196,11 @@ class UsersTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)];
+        return null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
     }
 
     /**
@@ -213,10 +217,10 @@ class UsersTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        return (string) $row[
+        return (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
         ];
     }
 
@@ -233,7 +237,7 @@ class UsersTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? UsersTableMap::CLASS_DEFAULT : UsersTableMap::OM_CLASS;
+        return $withPrefix ? TransactionTableMap::CLASS_DEFAULT : TransactionTableMap::OM_CLASS;
     }
 
     /**
@@ -247,22 +251,22 @@ class UsersTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Users object, last column rank)
+     * @return array           (Transaction object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = UsersTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = UsersTableMap::getInstanceFromPool($key))) {
+        $key = TransactionTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = TransactionTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + UsersTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + TransactionTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = UsersTableMap::OM_CLASS;
-            /** @var Users $obj */
+            $cls = TransactionTableMap::OM_CLASS;
+            /** @var Transaction $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            UsersTableMap::addInstanceToPool($obj, $key);
+            TransactionTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -285,18 +289,18 @@ class UsersTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = UsersTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = UsersTableMap::getInstanceFromPool($key))) {
+            $key = TransactionTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = TransactionTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Users $obj */
+                /** @var Transaction $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                UsersTableMap::addInstanceToPool($obj, $key);
+                TransactionTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -317,13 +321,19 @@ class UsersTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(UsersTableMap::COL_EMAIL);
-            $criteria->addSelectColumn(UsersTableMap::COL_NAME);
-            $criteria->addSelectColumn(UsersTableMap::COL_PASSWORD);
+            $criteria->addSelectColumn(TransactionTableMap::COL_ID);
+            $criteria->addSelectColumn(TransactionTableMap::COL_NAME);
+            $criteria->addSelectColumn(TransactionTableMap::COL_CREDITOR);
+            $criteria->addSelectColumn(TransactionTableMap::COL_DEBTOR);
+            $criteria->addSelectColumn(TransactionTableMap::COL_AMOUNT);
+            $criteria->addSelectColumn(TransactionTableMap::COL_TIME);
         } else {
-            $criteria->addSelectColumn($alias . '.email');
+            $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.password');
+            $criteria->addSelectColumn($alias . '.creditor');
+            $criteria->addSelectColumn($alias . '.debtor');
+            $criteria->addSelectColumn($alias . '.amount');
+            $criteria->addSelectColumn($alias . '.time');
         }
     }
 
@@ -336,7 +346,7 @@ class UsersTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(UsersTableMap::DATABASE_NAME)->getTable(UsersTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(TransactionTableMap::DATABASE_NAME)->getTable(TransactionTableMap::TABLE_NAME);
     }
 
     /**
@@ -344,16 +354,16 @@ class UsersTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(UsersTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(UsersTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new UsersTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(TransactionTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(TransactionTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new TransactionTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Users or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Transaction or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Users object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Transaction object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -364,27 +374,27 @@ class UsersTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UsersTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(TransactionTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Users) { // it's a model object
+        } elseif ($values instanceof \Transaction) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(UsersTableMap::DATABASE_NAME);
-            $criteria->add(UsersTableMap::COL_EMAIL, (array) $values, Criteria::IN);
+            $criteria = new Criteria(TransactionTableMap::DATABASE_NAME);
+            $criteria->add(TransactionTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = UsersQuery::create()->mergeWith($criteria);
+        $query = TransactionQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            UsersTableMap::clearInstancePool();
+            TransactionTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                UsersTableMap::removeInstanceFromPool($singleval);
+                TransactionTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -392,20 +402,20 @@ class UsersTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the Users table.
+     * Deletes all rows from the Transaction table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return UsersQuery::create()->doDeleteAll($con);
+        return TransactionQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Users or Criteria object.
+     * Performs an INSERT on the database, given a Transaction or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Users object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Transaction object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -414,18 +424,22 @@ class UsersTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UsersTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(TransactionTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Users object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Transaction object
+        }
+
+        if ($criteria->containsKey(TransactionTableMap::COL_ID) && $criteria->keyContainsValue(TransactionTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.TransactionTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = UsersQuery::create()->mergeWith($criteria);
+        $query = TransactionQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -434,7 +448,7 @@ class UsersTableMap extends TableMap
         });
     }
 
-} // UsersTableMap
+} // TransactionTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-UsersTableMap::buildTableMap();
+TransactionTableMap::buildTableMap();

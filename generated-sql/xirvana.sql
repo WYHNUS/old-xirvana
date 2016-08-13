@@ -17,5 +17,51 @@ CREATE TABLE `Users`
     PRIMARY KEY (`email`)
 ) ENGINE=InnoDB;
 
+-- ---------------------------------------------------------------------
+-- Debt
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Debt`;
+
+CREATE TABLE `Debt`
+(
+    `creditor` VARCHAR(255) NOT NULL,
+    `debtor` VARCHAR(255) NOT NULL,
+    `amount` DECIMAL NOT NULL,
+    PRIMARY KEY (`creditor`,`debtor`),
+    INDEX `fi_tor_user` (`debtor`),
+    CONSTRAINT `creditor_user`
+        FOREIGN KEY (`creditor`)
+        REFERENCES `Users` (`email`),
+    CONSTRAINT `debtor_user`
+        FOREIGN KEY (`debtor`)
+        REFERENCES `Users` (`email`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- Transaction
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Transaction`;
+
+CREATE TABLE `Transaction`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `creditor` VARCHAR(255) NOT NULL,
+    `debtor` VARCHAR(255) NOT NULL,
+    `amount` DECIMAL NOT NULL,
+    `time` DATETIME,
+    PRIMARY KEY (`id`),
+    INDEX `fi_ditor` (`creditor`),
+    INDEX `fi_tor` (`debtor`),
+    CONSTRAINT `creditor`
+        FOREIGN KEY (`creditor`)
+        REFERENCES `Users` (`email`),
+    CONSTRAINT `debtor`
+        FOREIGN KEY (`debtor`)
+        REFERENCES `Users` (`email`)
+) ENGINE=InnoDB;
+
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;

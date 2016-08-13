@@ -2,8 +2,8 @@
 
 namespace Map;
 
-use \Users;
-use \UsersQuery;
+use \Debt;
+use \DebtQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'Users' table.
+ * This class defines the structure of the 'Debt' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class UsersTableMap extends TableMap
+class DebtTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class UsersTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = '.Map.UsersTableMap';
+    const CLASS_NAME = '.Map.DebtTableMap';
 
     /**
      * The default database name for this class
@@ -44,17 +44,17 @@ class UsersTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'Users';
+    const TABLE_NAME = 'Debt';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\Users';
+    const OM_CLASS = '\\Debt';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'Users';
+    const CLASS_DEFAULT = 'Debt';
 
     /**
      * The total number of columns
@@ -72,19 +72,19 @@ class UsersTableMap extends TableMap
     const NUM_HYDRATE_COLUMNS = 3;
 
     /**
-     * the column name for the email field
+     * the column name for the creditor field
      */
-    const COL_EMAIL = 'Users.email';
+    const COL_CREDITOR = 'Debt.creditor';
 
     /**
-     * the column name for the name field
+     * the column name for the debtor field
      */
-    const COL_NAME = 'Users.name';
+    const COL_DEBTOR = 'Debt.debtor';
 
     /**
-     * the column name for the password field
+     * the column name for the amount field
      */
-    const COL_PASSWORD = 'Users.password';
+    const COL_AMOUNT = 'Debt.amount';
 
     /**
      * The default string format for model objects of the related table
@@ -98,10 +98,10 @@ class UsersTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Email', 'Name', 'Password', ),
-        self::TYPE_CAMELNAME     => array('email', 'name', 'password', ),
-        self::TYPE_COLNAME       => array(UsersTableMap::COL_EMAIL, UsersTableMap::COL_NAME, UsersTableMap::COL_PASSWORD, ),
-        self::TYPE_FIELDNAME     => array('email', 'name', 'password', ),
+        self::TYPE_PHPNAME       => array('Creditor', 'Debtor', 'Amount', ),
+        self::TYPE_CAMELNAME     => array('creditor', 'debtor', 'amount', ),
+        self::TYPE_COLNAME       => array(DebtTableMap::COL_CREDITOR, DebtTableMap::COL_DEBTOR, DebtTableMap::COL_AMOUNT, ),
+        self::TYPE_FIELDNAME     => array('creditor', 'debtor', 'amount', ),
         self::TYPE_NUM           => array(0, 1, 2, )
     );
 
@@ -112,10 +112,10 @@ class UsersTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Email' => 0, 'Name' => 1, 'Password' => 2, ),
-        self::TYPE_CAMELNAME     => array('email' => 0, 'name' => 1, 'password' => 2, ),
-        self::TYPE_COLNAME       => array(UsersTableMap::COL_EMAIL => 0, UsersTableMap::COL_NAME => 1, UsersTableMap::COL_PASSWORD => 2, ),
-        self::TYPE_FIELDNAME     => array('email' => 0, 'name' => 1, 'password' => 2, ),
+        self::TYPE_PHPNAME       => array('Creditor' => 0, 'Debtor' => 1, 'Amount' => 2, ),
+        self::TYPE_CAMELNAME     => array('creditor' => 0, 'debtor' => 1, 'amount' => 2, ),
+        self::TYPE_COLNAME       => array(DebtTableMap::COL_CREDITOR => 0, DebtTableMap::COL_DEBTOR => 1, DebtTableMap::COL_AMOUNT => 2, ),
+        self::TYPE_FIELDNAME     => array('creditor' => 0, 'debtor' => 1, 'amount' => 2, ),
         self::TYPE_NUM           => array(0, 1, 2, )
     );
 
@@ -129,16 +129,16 @@ class UsersTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('Users');
-        $this->setPhpName('Users');
+        $this->setName('Debt');
+        $this->setPhpName('Debt');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\Users');
+        $this->setClassName('\\Debt');
         $this->setPackage('');
         $this->setUseIdGenerator(false);
         // columns
-        $this->addPrimaryKey('email', 'Email', 'VARCHAR', true, 255, null);
-        $this->addColumn('name', 'Name', 'VARCHAR', true, 255, null);
-        $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
+        $this->addForeignPrimaryKey('creditor', 'Creditor', 'VARCHAR' , 'Users', 'email', true, 255, null);
+        $this->addForeignPrimaryKey('debtor', 'Debtor', 'VARCHAR' , 'Users', 'email', true, 255, null);
+        $this->addColumn('amount', 'Amount', 'DECIMAL', true, null, null);
     } // initialize()
 
     /**
@@ -146,35 +146,74 @@ class UsersTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('DebtRelatedByCreditor', '\\Debt', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('Debt_Creditor', '\\Users', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':creditor',
     1 => ':email',
   ),
-), null, null, 'DebtsRelatedByCreditor', false);
-        $this->addRelation('DebtRelatedByDebtor', '\\Debt', RelationMap::ONE_TO_MANY, array (
+), null, null, null, false);
+        $this->addRelation('Debt_Debtor', '\\Users', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':debtor',
     1 => ':email',
   ),
-), null, null, 'DebtsRelatedByDebtor', false);
-        $this->addRelation('TransactionRelatedByCreditor', '\\Transaction', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':creditor',
-    1 => ':email',
-  ),
-), null, null, 'TransactionsRelatedByCreditor', false);
-        $this->addRelation('TransactionRelatedByDebtor', '\\Transaction', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':debtor',
-    1 => ':email',
-  ),
-), null, null, 'TransactionsRelatedByDebtor', false);
+), null, null, null, false);
     } // buildRelations()
+
+    /**
+     * Adds an object to the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database. In some cases you may need to explicitly add objects
+     * to the cache in order to ensure that the same objects are always returned by find*()
+     * and findPk*() calls.
+     *
+     * @param \Debt $obj A \Debt object.
+     * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
+     */
+    public static function addInstanceToPool($obj, $key = null)
+    {
+        if (Propel::isInstancePoolingEnabled()) {
+            if (null === $key) {
+                $key = serialize([(null === $obj->getCreditor() || is_scalar($obj->getCreditor()) || is_callable([$obj->getCreditor(), '__toString']) ? (string) $obj->getCreditor() : $obj->getCreditor()), (null === $obj->getDebtor() || is_scalar($obj->getDebtor()) || is_callable([$obj->getDebtor(), '__toString']) ? (string) $obj->getDebtor() : $obj->getDebtor())]);
+            } // if key === null
+            self::$instances[$key] = $obj;
+        }
+    }
+
+    /**
+     * Removes an object from the instance pool.
+     *
+     * Propel keeps cached copies of objects in an instance pool when they are retrieved
+     * from the database.  In some cases -- especially when you override doDelete
+     * methods in your stub classes -- you may need to explicitly remove objects
+     * from the cache in order to prevent returning objects that no longer exist.
+     *
+     * @param mixed $value A \Debt object or a primary key value.
+     */
+    public static function removeInstanceFromPool($value)
+    {
+        if (Propel::isInstancePoolingEnabled() && null !== $value) {
+            if (is_object($value) && $value instanceof \Debt) {
+                $key = serialize([(null === $value->getCreditor() || is_scalar($value->getCreditor()) || is_callable([$value->getCreditor(), '__toString']) ? (string) $value->getCreditor() : $value->getCreditor()), (null === $value->getDebtor() || is_scalar($value->getDebtor()) || is_callable([$value->getDebtor(), '__toString']) ? (string) $value->getDebtor() : $value->getDebtor())]);
+
+            } elseif (is_array($value) && count($value) === 2) {
+                // assume we've been passed a primary key";
+                $key = serialize([(null === $value[0] || is_scalar($value[0]) || is_callable([$value[0], '__toString']) ? (string) $value[0] : $value[0]), (null === $value[1] || is_scalar($value[1]) || is_callable([$value[1], '__toString']) ? (string) $value[1] : $value[1])]);
+            } elseif ($value instanceof Criteria) {
+                self::$instances = [];
+
+                return;
+            } else {
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \Debt object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                throw $e;
+            }
+
+            unset(self::$instances[$key]);
+        }
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -192,11 +231,11 @@ class UsersTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Creditor', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Debtor', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)];
+        return serialize([(null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Creditor', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Creditor', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Creditor', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Creditor', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Creditor', TableMap::TYPE_PHPNAME, $indexType)]), (null === $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Debtor', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Debtor', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Debtor', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Debtor', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('Debtor', TableMap::TYPE_PHPNAME, $indexType)])]);
     }
 
     /**
@@ -213,11 +252,20 @@ class UsersTableMap extends TableMap
      */
     public static function getPrimaryKeyFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        return (string) $row[
+            $pks = [];
+
+        $pks[] = (string) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('Creditor', TableMap::TYPE_PHPNAME, $indexType)
         ];
+        $pks[] = (string) $row[
+            $indexType == TableMap::TYPE_NUM
+                ? 1 + $offset
+                : self::translateFieldName('Debtor', TableMap::TYPE_PHPNAME, $indexType)
+        ];
+
+        return $pks;
     }
 
     /**
@@ -233,7 +281,7 @@ class UsersTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? UsersTableMap::CLASS_DEFAULT : UsersTableMap::OM_CLASS;
+        return $withPrefix ? DebtTableMap::CLASS_DEFAULT : DebtTableMap::OM_CLASS;
     }
 
     /**
@@ -247,22 +295,22 @@ class UsersTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Users object, last column rank)
+     * @return array           (Debt object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = UsersTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = UsersTableMap::getInstanceFromPool($key))) {
+        $key = DebtTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = DebtTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + UsersTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + DebtTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = UsersTableMap::OM_CLASS;
-            /** @var Users $obj */
+            $cls = DebtTableMap::OM_CLASS;
+            /** @var Debt $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            UsersTableMap::addInstanceToPool($obj, $key);
+            DebtTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -285,18 +333,18 @@ class UsersTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = UsersTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = UsersTableMap::getInstanceFromPool($key))) {
+            $key = DebtTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = DebtTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Users $obj */
+                /** @var Debt $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                UsersTableMap::addInstanceToPool($obj, $key);
+                DebtTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -317,13 +365,13 @@ class UsersTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(UsersTableMap::COL_EMAIL);
-            $criteria->addSelectColumn(UsersTableMap::COL_NAME);
-            $criteria->addSelectColumn(UsersTableMap::COL_PASSWORD);
+            $criteria->addSelectColumn(DebtTableMap::COL_CREDITOR);
+            $criteria->addSelectColumn(DebtTableMap::COL_DEBTOR);
+            $criteria->addSelectColumn(DebtTableMap::COL_AMOUNT);
         } else {
-            $criteria->addSelectColumn($alias . '.email');
-            $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.password');
+            $criteria->addSelectColumn($alias . '.creditor');
+            $criteria->addSelectColumn($alias . '.debtor');
+            $criteria->addSelectColumn($alias . '.amount');
         }
     }
 
@@ -336,7 +384,7 @@ class UsersTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(UsersTableMap::DATABASE_NAME)->getTable(UsersTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(DebtTableMap::DATABASE_NAME)->getTable(DebtTableMap::TABLE_NAME);
     }
 
     /**
@@ -344,16 +392,16 @@ class UsersTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(UsersTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(UsersTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new UsersTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(DebtTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(DebtTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new DebtTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Users or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Debt or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Users object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Debt object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -364,27 +412,37 @@ class UsersTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UsersTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(DebtTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \Users) { // it's a model object
+        } elseif ($values instanceof \Debt) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(UsersTableMap::DATABASE_NAME);
-            $criteria->add(UsersTableMap::COL_EMAIL, (array) $values, Criteria::IN);
+            $criteria = new Criteria(DebtTableMap::DATABASE_NAME);
+            // primary key is composite; we therefore, expect
+            // the primary key passed to be an array of pkey values
+            if (count($values) == count($values, COUNT_RECURSIVE)) {
+                // array is not multi-dimensional
+                $values = array($values);
+            }
+            foreach ($values as $value) {
+                $criterion = $criteria->getNewCriterion(DebtTableMap::COL_CREDITOR, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(DebtTableMap::COL_DEBTOR, $value[1]));
+                $criteria->addOr($criterion);
+            }
         }
 
-        $query = UsersQuery::create()->mergeWith($criteria);
+        $query = DebtQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            UsersTableMap::clearInstancePool();
+            DebtTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                UsersTableMap::removeInstanceFromPool($singleval);
+                DebtTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -392,20 +450,20 @@ class UsersTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the Users table.
+     * Deletes all rows from the Debt table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return UsersQuery::create()->doDeleteAll($con);
+        return DebtQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Users or Criteria object.
+     * Performs an INSERT on the database, given a Debt or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Users object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Debt object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -414,18 +472,18 @@ class UsersTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UsersTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(DebtTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Users object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Debt object
         }
 
 
         // Set the correct dbName
-        $query = UsersQuery::create()->mergeWith($criteria);
+        $query = DebtQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -434,7 +492,7 @@ class UsersTableMap extends TableMap
         });
     }
 
-} // UsersTableMap
+} // DebtTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-UsersTableMap::buildTableMap();
+DebtTableMap::buildTableMap();

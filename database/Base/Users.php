@@ -2,15 +2,23 @@
 
 namespace Base;
 
+use \Debt as ChildDebt;
+use \DebtQuery as ChildDebtQuery;
+use \Transaction as ChildTransaction;
+use \TransactionQuery as ChildTransactionQuery;
+use \Users as ChildUsers;
 use \UsersQuery as ChildUsersQuery;
 use \Exception;
 use \PDO;
+use Map\DebtTableMap;
+use Map\TransactionTableMap;
 use Map\UsersTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
+use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\LogicException;
@@ -81,12 +89,60 @@ abstract class Users implements ActiveRecordInterface
     protected $password;
 
     /**
+     * @var        ObjectCollection|ChildDebt[] Collection to store aggregation of ChildDebt objects.
+     */
+    protected $collDebtsRelatedByCreditor;
+    protected $collDebtsRelatedByCreditorPartial;
+
+    /**
+     * @var        ObjectCollection|ChildDebt[] Collection to store aggregation of ChildDebt objects.
+     */
+    protected $collDebtsRelatedByDebtor;
+    protected $collDebtsRelatedByDebtorPartial;
+
+    /**
+     * @var        ObjectCollection|ChildTransaction[] Collection to store aggregation of ChildTransaction objects.
+     */
+    protected $collTransactionsRelatedByCreditor;
+    protected $collTransactionsRelatedByCreditorPartial;
+
+    /**
+     * @var        ObjectCollection|ChildTransaction[] Collection to store aggregation of ChildTransaction objects.
+     */
+    protected $collTransactionsRelatedByDebtor;
+    protected $collTransactionsRelatedByDebtorPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildDebt[]
+     */
+    protected $debtsRelatedByCreditorScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildDebt[]
+     */
+    protected $debtsRelatedByDebtorScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildTransaction[]
+     */
+    protected $transactionsRelatedByCreditorScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildTransaction[]
+     */
+    protected $transactionsRelatedByDebtorScheduledForDeletion = null;
 
     /**
      * Initializes internal state of Base\Users object.
@@ -516,6 +572,14 @@ abstract class Users implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->collDebtsRelatedByCreditor = null;
+
+            $this->collDebtsRelatedByDebtor = null;
+
+            $this->collTransactionsRelatedByCreditor = null;
+
+            $this->collTransactionsRelatedByDebtor = null;
+
         } // if (deep)
     }
 
@@ -624,6 +688,74 @@ abstract class Users implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->debtsRelatedByCreditorScheduledForDeletion !== null) {
+                if (!$this->debtsRelatedByCreditorScheduledForDeletion->isEmpty()) {
+                    \DebtQuery::create()
+                        ->filterByPrimaryKeys($this->debtsRelatedByCreditorScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->debtsRelatedByCreditorScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collDebtsRelatedByCreditor !== null) {
+                foreach ($this->collDebtsRelatedByCreditor as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->debtsRelatedByDebtorScheduledForDeletion !== null) {
+                if (!$this->debtsRelatedByDebtorScheduledForDeletion->isEmpty()) {
+                    \DebtQuery::create()
+                        ->filterByPrimaryKeys($this->debtsRelatedByDebtorScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->debtsRelatedByDebtorScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collDebtsRelatedByDebtor !== null) {
+                foreach ($this->collDebtsRelatedByDebtor as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->transactionsRelatedByCreditorScheduledForDeletion !== null) {
+                if (!$this->transactionsRelatedByCreditorScheduledForDeletion->isEmpty()) {
+                    \TransactionQuery::create()
+                        ->filterByPrimaryKeys($this->transactionsRelatedByCreditorScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->transactionsRelatedByCreditorScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collTransactionsRelatedByCreditor !== null) {
+                foreach ($this->collTransactionsRelatedByCreditor as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->transactionsRelatedByDebtorScheduledForDeletion !== null) {
+                if (!$this->transactionsRelatedByDebtorScheduledForDeletion->isEmpty()) {
+                    \TransactionQuery::create()
+                        ->filterByPrimaryKeys($this->transactionsRelatedByDebtorScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->transactionsRelatedByDebtorScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collTransactionsRelatedByDebtor !== null) {
+                foreach ($this->collTransactionsRelatedByDebtor as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             $this->alreadyInSave = false;
@@ -758,10 +890,11 @@ abstract class Users implements ActiveRecordInterface
      *                    Defaults to TableMap::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to TRUE.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
         if (isset($alreadyDumpedObjects['Users'][$this->hashCode()])) {
@@ -779,6 +912,68 @@ abstract class Users implements ActiveRecordInterface
             $result[$key] = $virtualColumn;
         }
 
+        if ($includeForeignObjects) {
+            if (null !== $this->collDebtsRelatedByCreditor) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'debts';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'Debts';
+                        break;
+                    default:
+                        $key = 'Debts';
+                }
+
+                $result[$key] = $this->collDebtsRelatedByCreditor->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collDebtsRelatedByDebtor) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'debts';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'Debts';
+                        break;
+                    default:
+                        $key = 'Debts';
+                }
+
+                $result[$key] = $this->collDebtsRelatedByDebtor->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collTransactionsRelatedByCreditor) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'transactions';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'Transactions';
+                        break;
+                    default:
+                        $key = 'Transactions';
+                }
+
+                $result[$key] = $this->collTransactionsRelatedByCreditor->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collTransactionsRelatedByDebtor) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'transactions';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'Transactions';
+                        break;
+                    default:
+                        $key = 'Transactions';
+                }
+
+                $result[$key] = $this->collTransactionsRelatedByDebtor->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+        }
 
         return $result;
     }
@@ -995,6 +1190,38 @@ abstract class Users implements ActiveRecordInterface
         $copyObj->setEmail($this->getEmail());
         $copyObj->setName($this->getName());
         $copyObj->setPassword($this->getPassword());
+
+        if ($deepCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+
+            foreach ($this->getDebtsRelatedByCreditor() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addDebtRelatedByCreditor($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getDebtsRelatedByDebtor() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addDebtRelatedByDebtor($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getTransactionsRelatedByCreditor() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addTransactionRelatedByCreditor($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getTransactionsRelatedByDebtor() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addTransactionRelatedByDebtor($relObj->copy($deepCopy));
+                }
+            }
+
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1020,6 +1247,937 @@ abstract class Users implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param      string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('DebtRelatedByCreditor' == $relationName) {
+            return $this->initDebtsRelatedByCreditor();
+        }
+        if ('DebtRelatedByDebtor' == $relationName) {
+            return $this->initDebtsRelatedByDebtor();
+        }
+        if ('TransactionRelatedByCreditor' == $relationName) {
+            return $this->initTransactionsRelatedByCreditor();
+        }
+        if ('TransactionRelatedByDebtor' == $relationName) {
+            return $this->initTransactionsRelatedByDebtor();
+        }
+    }
+
+    /**
+     * Clears out the collDebtsRelatedByCreditor collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addDebtsRelatedByCreditor()
+     */
+    public function clearDebtsRelatedByCreditor()
+    {
+        $this->collDebtsRelatedByCreditor = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collDebtsRelatedByCreditor collection loaded partially.
+     */
+    public function resetPartialDebtsRelatedByCreditor($v = true)
+    {
+        $this->collDebtsRelatedByCreditorPartial = $v;
+    }
+
+    /**
+     * Initializes the collDebtsRelatedByCreditor collection.
+     *
+     * By default this just sets the collDebtsRelatedByCreditor collection to an empty array (like clearcollDebtsRelatedByCreditor());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initDebtsRelatedByCreditor($overrideExisting = true)
+    {
+        if (null !== $this->collDebtsRelatedByCreditor && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = DebtTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collDebtsRelatedByCreditor = new $collectionClassName;
+        $this->collDebtsRelatedByCreditor->setModel('\Debt');
+    }
+
+    /**
+     * Gets an array of ChildDebt objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUsers is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildDebt[] List of ChildDebt objects
+     * @throws PropelException
+     */
+    public function getDebtsRelatedByCreditor(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collDebtsRelatedByCreditorPartial && !$this->isNew();
+        if (null === $this->collDebtsRelatedByCreditor || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collDebtsRelatedByCreditor) {
+                // return empty collection
+                $this->initDebtsRelatedByCreditor();
+            } else {
+                $collDebtsRelatedByCreditor = ChildDebtQuery::create(null, $criteria)
+                    ->filterByDebt_Creditor($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collDebtsRelatedByCreditorPartial && count($collDebtsRelatedByCreditor)) {
+                        $this->initDebtsRelatedByCreditor(false);
+
+                        foreach ($collDebtsRelatedByCreditor as $obj) {
+                            if (false == $this->collDebtsRelatedByCreditor->contains($obj)) {
+                                $this->collDebtsRelatedByCreditor->append($obj);
+                            }
+                        }
+
+                        $this->collDebtsRelatedByCreditorPartial = true;
+                    }
+
+                    return $collDebtsRelatedByCreditor;
+                }
+
+                if ($partial && $this->collDebtsRelatedByCreditor) {
+                    foreach ($this->collDebtsRelatedByCreditor as $obj) {
+                        if ($obj->isNew()) {
+                            $collDebtsRelatedByCreditor[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collDebtsRelatedByCreditor = $collDebtsRelatedByCreditor;
+                $this->collDebtsRelatedByCreditorPartial = false;
+            }
+        }
+
+        return $this->collDebtsRelatedByCreditor;
+    }
+
+    /**
+     * Sets a collection of ChildDebt objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $debtsRelatedByCreditor A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUsers The current object (for fluent API support)
+     */
+    public function setDebtsRelatedByCreditor(Collection $debtsRelatedByCreditor, ConnectionInterface $con = null)
+    {
+        /** @var ChildDebt[] $debtsRelatedByCreditorToDelete */
+        $debtsRelatedByCreditorToDelete = $this->getDebtsRelatedByCreditor(new Criteria(), $con)->diff($debtsRelatedByCreditor);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->debtsRelatedByCreditorScheduledForDeletion = clone $debtsRelatedByCreditorToDelete;
+
+        foreach ($debtsRelatedByCreditorToDelete as $debtRelatedByCreditorRemoved) {
+            $debtRelatedByCreditorRemoved->setDebt_Creditor(null);
+        }
+
+        $this->collDebtsRelatedByCreditor = null;
+        foreach ($debtsRelatedByCreditor as $debtRelatedByCreditor) {
+            $this->addDebtRelatedByCreditor($debtRelatedByCreditor);
+        }
+
+        $this->collDebtsRelatedByCreditor = $debtsRelatedByCreditor;
+        $this->collDebtsRelatedByCreditorPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Debt objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Debt objects.
+     * @throws PropelException
+     */
+    public function countDebtsRelatedByCreditor(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collDebtsRelatedByCreditorPartial && !$this->isNew();
+        if (null === $this->collDebtsRelatedByCreditor || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collDebtsRelatedByCreditor) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getDebtsRelatedByCreditor());
+            }
+
+            $query = ChildDebtQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByDebt_Creditor($this)
+                ->count($con);
+        }
+
+        return count($this->collDebtsRelatedByCreditor);
+    }
+
+    /**
+     * Method called to associate a ChildDebt object to this object
+     * through the ChildDebt foreign key attribute.
+     *
+     * @param  ChildDebt $l ChildDebt
+     * @return $this|\Users The current object (for fluent API support)
+     */
+    public function addDebtRelatedByCreditor(ChildDebt $l)
+    {
+        if ($this->collDebtsRelatedByCreditor === null) {
+            $this->initDebtsRelatedByCreditor();
+            $this->collDebtsRelatedByCreditorPartial = true;
+        }
+
+        if (!$this->collDebtsRelatedByCreditor->contains($l)) {
+            $this->doAddDebtRelatedByCreditor($l);
+
+            if ($this->debtsRelatedByCreditorScheduledForDeletion and $this->debtsRelatedByCreditorScheduledForDeletion->contains($l)) {
+                $this->debtsRelatedByCreditorScheduledForDeletion->remove($this->debtsRelatedByCreditorScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildDebt $debtRelatedByCreditor The ChildDebt object to add.
+     */
+    protected function doAddDebtRelatedByCreditor(ChildDebt $debtRelatedByCreditor)
+    {
+        $this->collDebtsRelatedByCreditor[]= $debtRelatedByCreditor;
+        $debtRelatedByCreditor->setDebt_Creditor($this);
+    }
+
+    /**
+     * @param  ChildDebt $debtRelatedByCreditor The ChildDebt object to remove.
+     * @return $this|ChildUsers The current object (for fluent API support)
+     */
+    public function removeDebtRelatedByCreditor(ChildDebt $debtRelatedByCreditor)
+    {
+        if ($this->getDebtsRelatedByCreditor()->contains($debtRelatedByCreditor)) {
+            $pos = $this->collDebtsRelatedByCreditor->search($debtRelatedByCreditor);
+            $this->collDebtsRelatedByCreditor->remove($pos);
+            if (null === $this->debtsRelatedByCreditorScheduledForDeletion) {
+                $this->debtsRelatedByCreditorScheduledForDeletion = clone $this->collDebtsRelatedByCreditor;
+                $this->debtsRelatedByCreditorScheduledForDeletion->clear();
+            }
+            $this->debtsRelatedByCreditorScheduledForDeletion[]= clone $debtRelatedByCreditor;
+            $debtRelatedByCreditor->setDebt_Creditor(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collDebtsRelatedByDebtor collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addDebtsRelatedByDebtor()
+     */
+    public function clearDebtsRelatedByDebtor()
+    {
+        $this->collDebtsRelatedByDebtor = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collDebtsRelatedByDebtor collection loaded partially.
+     */
+    public function resetPartialDebtsRelatedByDebtor($v = true)
+    {
+        $this->collDebtsRelatedByDebtorPartial = $v;
+    }
+
+    /**
+     * Initializes the collDebtsRelatedByDebtor collection.
+     *
+     * By default this just sets the collDebtsRelatedByDebtor collection to an empty array (like clearcollDebtsRelatedByDebtor());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initDebtsRelatedByDebtor($overrideExisting = true)
+    {
+        if (null !== $this->collDebtsRelatedByDebtor && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = DebtTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collDebtsRelatedByDebtor = new $collectionClassName;
+        $this->collDebtsRelatedByDebtor->setModel('\Debt');
+    }
+
+    /**
+     * Gets an array of ChildDebt objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUsers is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildDebt[] List of ChildDebt objects
+     * @throws PropelException
+     */
+    public function getDebtsRelatedByDebtor(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collDebtsRelatedByDebtorPartial && !$this->isNew();
+        if (null === $this->collDebtsRelatedByDebtor || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collDebtsRelatedByDebtor) {
+                // return empty collection
+                $this->initDebtsRelatedByDebtor();
+            } else {
+                $collDebtsRelatedByDebtor = ChildDebtQuery::create(null, $criteria)
+                    ->filterByDebt_Debtor($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collDebtsRelatedByDebtorPartial && count($collDebtsRelatedByDebtor)) {
+                        $this->initDebtsRelatedByDebtor(false);
+
+                        foreach ($collDebtsRelatedByDebtor as $obj) {
+                            if (false == $this->collDebtsRelatedByDebtor->contains($obj)) {
+                                $this->collDebtsRelatedByDebtor->append($obj);
+                            }
+                        }
+
+                        $this->collDebtsRelatedByDebtorPartial = true;
+                    }
+
+                    return $collDebtsRelatedByDebtor;
+                }
+
+                if ($partial && $this->collDebtsRelatedByDebtor) {
+                    foreach ($this->collDebtsRelatedByDebtor as $obj) {
+                        if ($obj->isNew()) {
+                            $collDebtsRelatedByDebtor[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collDebtsRelatedByDebtor = $collDebtsRelatedByDebtor;
+                $this->collDebtsRelatedByDebtorPartial = false;
+            }
+        }
+
+        return $this->collDebtsRelatedByDebtor;
+    }
+
+    /**
+     * Sets a collection of ChildDebt objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $debtsRelatedByDebtor A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUsers The current object (for fluent API support)
+     */
+    public function setDebtsRelatedByDebtor(Collection $debtsRelatedByDebtor, ConnectionInterface $con = null)
+    {
+        /** @var ChildDebt[] $debtsRelatedByDebtorToDelete */
+        $debtsRelatedByDebtorToDelete = $this->getDebtsRelatedByDebtor(new Criteria(), $con)->diff($debtsRelatedByDebtor);
+
+
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->debtsRelatedByDebtorScheduledForDeletion = clone $debtsRelatedByDebtorToDelete;
+
+        foreach ($debtsRelatedByDebtorToDelete as $debtRelatedByDebtorRemoved) {
+            $debtRelatedByDebtorRemoved->setDebt_Debtor(null);
+        }
+
+        $this->collDebtsRelatedByDebtor = null;
+        foreach ($debtsRelatedByDebtor as $debtRelatedByDebtor) {
+            $this->addDebtRelatedByDebtor($debtRelatedByDebtor);
+        }
+
+        $this->collDebtsRelatedByDebtor = $debtsRelatedByDebtor;
+        $this->collDebtsRelatedByDebtorPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Debt objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Debt objects.
+     * @throws PropelException
+     */
+    public function countDebtsRelatedByDebtor(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collDebtsRelatedByDebtorPartial && !$this->isNew();
+        if (null === $this->collDebtsRelatedByDebtor || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collDebtsRelatedByDebtor) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getDebtsRelatedByDebtor());
+            }
+
+            $query = ChildDebtQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByDebt_Debtor($this)
+                ->count($con);
+        }
+
+        return count($this->collDebtsRelatedByDebtor);
+    }
+
+    /**
+     * Method called to associate a ChildDebt object to this object
+     * through the ChildDebt foreign key attribute.
+     *
+     * @param  ChildDebt $l ChildDebt
+     * @return $this|\Users The current object (for fluent API support)
+     */
+    public function addDebtRelatedByDebtor(ChildDebt $l)
+    {
+        if ($this->collDebtsRelatedByDebtor === null) {
+            $this->initDebtsRelatedByDebtor();
+            $this->collDebtsRelatedByDebtorPartial = true;
+        }
+
+        if (!$this->collDebtsRelatedByDebtor->contains($l)) {
+            $this->doAddDebtRelatedByDebtor($l);
+
+            if ($this->debtsRelatedByDebtorScheduledForDeletion and $this->debtsRelatedByDebtorScheduledForDeletion->contains($l)) {
+                $this->debtsRelatedByDebtorScheduledForDeletion->remove($this->debtsRelatedByDebtorScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildDebt $debtRelatedByDebtor The ChildDebt object to add.
+     */
+    protected function doAddDebtRelatedByDebtor(ChildDebt $debtRelatedByDebtor)
+    {
+        $this->collDebtsRelatedByDebtor[]= $debtRelatedByDebtor;
+        $debtRelatedByDebtor->setDebt_Debtor($this);
+    }
+
+    /**
+     * @param  ChildDebt $debtRelatedByDebtor The ChildDebt object to remove.
+     * @return $this|ChildUsers The current object (for fluent API support)
+     */
+    public function removeDebtRelatedByDebtor(ChildDebt $debtRelatedByDebtor)
+    {
+        if ($this->getDebtsRelatedByDebtor()->contains($debtRelatedByDebtor)) {
+            $pos = $this->collDebtsRelatedByDebtor->search($debtRelatedByDebtor);
+            $this->collDebtsRelatedByDebtor->remove($pos);
+            if (null === $this->debtsRelatedByDebtorScheduledForDeletion) {
+                $this->debtsRelatedByDebtorScheduledForDeletion = clone $this->collDebtsRelatedByDebtor;
+                $this->debtsRelatedByDebtorScheduledForDeletion->clear();
+            }
+            $this->debtsRelatedByDebtorScheduledForDeletion[]= clone $debtRelatedByDebtor;
+            $debtRelatedByDebtor->setDebt_Debtor(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collTransactionsRelatedByCreditor collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addTransactionsRelatedByCreditor()
+     */
+    public function clearTransactionsRelatedByCreditor()
+    {
+        $this->collTransactionsRelatedByCreditor = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collTransactionsRelatedByCreditor collection loaded partially.
+     */
+    public function resetPartialTransactionsRelatedByCreditor($v = true)
+    {
+        $this->collTransactionsRelatedByCreditorPartial = $v;
+    }
+
+    /**
+     * Initializes the collTransactionsRelatedByCreditor collection.
+     *
+     * By default this just sets the collTransactionsRelatedByCreditor collection to an empty array (like clearcollTransactionsRelatedByCreditor());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initTransactionsRelatedByCreditor($overrideExisting = true)
+    {
+        if (null !== $this->collTransactionsRelatedByCreditor && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = TransactionTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collTransactionsRelatedByCreditor = new $collectionClassName;
+        $this->collTransactionsRelatedByCreditor->setModel('\Transaction');
+    }
+
+    /**
+     * Gets an array of ChildTransaction objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUsers is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildTransaction[] List of ChildTransaction objects
+     * @throws PropelException
+     */
+    public function getTransactionsRelatedByCreditor(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTransactionsRelatedByCreditorPartial && !$this->isNew();
+        if (null === $this->collTransactionsRelatedByCreditor || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collTransactionsRelatedByCreditor) {
+                // return empty collection
+                $this->initTransactionsRelatedByCreditor();
+            } else {
+                $collTransactionsRelatedByCreditor = ChildTransactionQuery::create(null, $criteria)
+                    ->filterByTransaction_Creditor($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collTransactionsRelatedByCreditorPartial && count($collTransactionsRelatedByCreditor)) {
+                        $this->initTransactionsRelatedByCreditor(false);
+
+                        foreach ($collTransactionsRelatedByCreditor as $obj) {
+                            if (false == $this->collTransactionsRelatedByCreditor->contains($obj)) {
+                                $this->collTransactionsRelatedByCreditor->append($obj);
+                            }
+                        }
+
+                        $this->collTransactionsRelatedByCreditorPartial = true;
+                    }
+
+                    return $collTransactionsRelatedByCreditor;
+                }
+
+                if ($partial && $this->collTransactionsRelatedByCreditor) {
+                    foreach ($this->collTransactionsRelatedByCreditor as $obj) {
+                        if ($obj->isNew()) {
+                            $collTransactionsRelatedByCreditor[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collTransactionsRelatedByCreditor = $collTransactionsRelatedByCreditor;
+                $this->collTransactionsRelatedByCreditorPartial = false;
+            }
+        }
+
+        return $this->collTransactionsRelatedByCreditor;
+    }
+
+    /**
+     * Sets a collection of ChildTransaction objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $transactionsRelatedByCreditor A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUsers The current object (for fluent API support)
+     */
+    public function setTransactionsRelatedByCreditor(Collection $transactionsRelatedByCreditor, ConnectionInterface $con = null)
+    {
+        /** @var ChildTransaction[] $transactionsRelatedByCreditorToDelete */
+        $transactionsRelatedByCreditorToDelete = $this->getTransactionsRelatedByCreditor(new Criteria(), $con)->diff($transactionsRelatedByCreditor);
+
+
+        $this->transactionsRelatedByCreditorScheduledForDeletion = $transactionsRelatedByCreditorToDelete;
+
+        foreach ($transactionsRelatedByCreditorToDelete as $transactionRelatedByCreditorRemoved) {
+            $transactionRelatedByCreditorRemoved->setTransaction_Creditor(null);
+        }
+
+        $this->collTransactionsRelatedByCreditor = null;
+        foreach ($transactionsRelatedByCreditor as $transactionRelatedByCreditor) {
+            $this->addTransactionRelatedByCreditor($transactionRelatedByCreditor);
+        }
+
+        $this->collTransactionsRelatedByCreditor = $transactionsRelatedByCreditor;
+        $this->collTransactionsRelatedByCreditorPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Transaction objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Transaction objects.
+     * @throws PropelException
+     */
+    public function countTransactionsRelatedByCreditor(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTransactionsRelatedByCreditorPartial && !$this->isNew();
+        if (null === $this->collTransactionsRelatedByCreditor || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collTransactionsRelatedByCreditor) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getTransactionsRelatedByCreditor());
+            }
+
+            $query = ChildTransactionQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByTransaction_Creditor($this)
+                ->count($con);
+        }
+
+        return count($this->collTransactionsRelatedByCreditor);
+    }
+
+    /**
+     * Method called to associate a ChildTransaction object to this object
+     * through the ChildTransaction foreign key attribute.
+     *
+     * @param  ChildTransaction $l ChildTransaction
+     * @return $this|\Users The current object (for fluent API support)
+     */
+    public function addTransactionRelatedByCreditor(ChildTransaction $l)
+    {
+        if ($this->collTransactionsRelatedByCreditor === null) {
+            $this->initTransactionsRelatedByCreditor();
+            $this->collTransactionsRelatedByCreditorPartial = true;
+        }
+
+        if (!$this->collTransactionsRelatedByCreditor->contains($l)) {
+            $this->doAddTransactionRelatedByCreditor($l);
+
+            if ($this->transactionsRelatedByCreditorScheduledForDeletion and $this->transactionsRelatedByCreditorScheduledForDeletion->contains($l)) {
+                $this->transactionsRelatedByCreditorScheduledForDeletion->remove($this->transactionsRelatedByCreditorScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildTransaction $transactionRelatedByCreditor The ChildTransaction object to add.
+     */
+    protected function doAddTransactionRelatedByCreditor(ChildTransaction $transactionRelatedByCreditor)
+    {
+        $this->collTransactionsRelatedByCreditor[]= $transactionRelatedByCreditor;
+        $transactionRelatedByCreditor->setTransaction_Creditor($this);
+    }
+
+    /**
+     * @param  ChildTransaction $transactionRelatedByCreditor The ChildTransaction object to remove.
+     * @return $this|ChildUsers The current object (for fluent API support)
+     */
+    public function removeTransactionRelatedByCreditor(ChildTransaction $transactionRelatedByCreditor)
+    {
+        if ($this->getTransactionsRelatedByCreditor()->contains($transactionRelatedByCreditor)) {
+            $pos = $this->collTransactionsRelatedByCreditor->search($transactionRelatedByCreditor);
+            $this->collTransactionsRelatedByCreditor->remove($pos);
+            if (null === $this->transactionsRelatedByCreditorScheduledForDeletion) {
+                $this->transactionsRelatedByCreditorScheduledForDeletion = clone $this->collTransactionsRelatedByCreditor;
+                $this->transactionsRelatedByCreditorScheduledForDeletion->clear();
+            }
+            $this->transactionsRelatedByCreditorScheduledForDeletion[]= clone $transactionRelatedByCreditor;
+            $transactionRelatedByCreditor->setTransaction_Creditor(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Clears out the collTransactionsRelatedByDebtor collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addTransactionsRelatedByDebtor()
+     */
+    public function clearTransactionsRelatedByDebtor()
+    {
+        $this->collTransactionsRelatedByDebtor = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collTransactionsRelatedByDebtor collection loaded partially.
+     */
+    public function resetPartialTransactionsRelatedByDebtor($v = true)
+    {
+        $this->collTransactionsRelatedByDebtorPartial = $v;
+    }
+
+    /**
+     * Initializes the collTransactionsRelatedByDebtor collection.
+     *
+     * By default this just sets the collTransactionsRelatedByDebtor collection to an empty array (like clearcollTransactionsRelatedByDebtor());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initTransactionsRelatedByDebtor($overrideExisting = true)
+    {
+        if (null !== $this->collTransactionsRelatedByDebtor && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = TransactionTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collTransactionsRelatedByDebtor = new $collectionClassName;
+        $this->collTransactionsRelatedByDebtor->setModel('\Transaction');
+    }
+
+    /**
+     * Gets an array of ChildTransaction objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUsers is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildTransaction[] List of ChildTransaction objects
+     * @throws PropelException
+     */
+    public function getTransactionsRelatedByDebtor(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTransactionsRelatedByDebtorPartial && !$this->isNew();
+        if (null === $this->collTransactionsRelatedByDebtor || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collTransactionsRelatedByDebtor) {
+                // return empty collection
+                $this->initTransactionsRelatedByDebtor();
+            } else {
+                $collTransactionsRelatedByDebtor = ChildTransactionQuery::create(null, $criteria)
+                    ->filterByTransaction_Debtor($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collTransactionsRelatedByDebtorPartial && count($collTransactionsRelatedByDebtor)) {
+                        $this->initTransactionsRelatedByDebtor(false);
+
+                        foreach ($collTransactionsRelatedByDebtor as $obj) {
+                            if (false == $this->collTransactionsRelatedByDebtor->contains($obj)) {
+                                $this->collTransactionsRelatedByDebtor->append($obj);
+                            }
+                        }
+
+                        $this->collTransactionsRelatedByDebtorPartial = true;
+                    }
+
+                    return $collTransactionsRelatedByDebtor;
+                }
+
+                if ($partial && $this->collTransactionsRelatedByDebtor) {
+                    foreach ($this->collTransactionsRelatedByDebtor as $obj) {
+                        if ($obj->isNew()) {
+                            $collTransactionsRelatedByDebtor[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collTransactionsRelatedByDebtor = $collTransactionsRelatedByDebtor;
+                $this->collTransactionsRelatedByDebtorPartial = false;
+            }
+        }
+
+        return $this->collTransactionsRelatedByDebtor;
+    }
+
+    /**
+     * Sets a collection of ChildTransaction objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $transactionsRelatedByDebtor A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUsers The current object (for fluent API support)
+     */
+    public function setTransactionsRelatedByDebtor(Collection $transactionsRelatedByDebtor, ConnectionInterface $con = null)
+    {
+        /** @var ChildTransaction[] $transactionsRelatedByDebtorToDelete */
+        $transactionsRelatedByDebtorToDelete = $this->getTransactionsRelatedByDebtor(new Criteria(), $con)->diff($transactionsRelatedByDebtor);
+
+
+        $this->transactionsRelatedByDebtorScheduledForDeletion = $transactionsRelatedByDebtorToDelete;
+
+        foreach ($transactionsRelatedByDebtorToDelete as $transactionRelatedByDebtorRemoved) {
+            $transactionRelatedByDebtorRemoved->setTransaction_Debtor(null);
+        }
+
+        $this->collTransactionsRelatedByDebtor = null;
+        foreach ($transactionsRelatedByDebtor as $transactionRelatedByDebtor) {
+            $this->addTransactionRelatedByDebtor($transactionRelatedByDebtor);
+        }
+
+        $this->collTransactionsRelatedByDebtor = $transactionsRelatedByDebtor;
+        $this->collTransactionsRelatedByDebtorPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Transaction objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Transaction objects.
+     * @throws PropelException
+     */
+    public function countTransactionsRelatedByDebtor(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collTransactionsRelatedByDebtorPartial && !$this->isNew();
+        if (null === $this->collTransactionsRelatedByDebtor || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collTransactionsRelatedByDebtor) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getTransactionsRelatedByDebtor());
+            }
+
+            $query = ChildTransactionQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByTransaction_Debtor($this)
+                ->count($con);
+        }
+
+        return count($this->collTransactionsRelatedByDebtor);
+    }
+
+    /**
+     * Method called to associate a ChildTransaction object to this object
+     * through the ChildTransaction foreign key attribute.
+     *
+     * @param  ChildTransaction $l ChildTransaction
+     * @return $this|\Users The current object (for fluent API support)
+     */
+    public function addTransactionRelatedByDebtor(ChildTransaction $l)
+    {
+        if ($this->collTransactionsRelatedByDebtor === null) {
+            $this->initTransactionsRelatedByDebtor();
+            $this->collTransactionsRelatedByDebtorPartial = true;
+        }
+
+        if (!$this->collTransactionsRelatedByDebtor->contains($l)) {
+            $this->doAddTransactionRelatedByDebtor($l);
+
+            if ($this->transactionsRelatedByDebtorScheduledForDeletion and $this->transactionsRelatedByDebtorScheduledForDeletion->contains($l)) {
+                $this->transactionsRelatedByDebtorScheduledForDeletion->remove($this->transactionsRelatedByDebtorScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildTransaction $transactionRelatedByDebtor The ChildTransaction object to add.
+     */
+    protected function doAddTransactionRelatedByDebtor(ChildTransaction $transactionRelatedByDebtor)
+    {
+        $this->collTransactionsRelatedByDebtor[]= $transactionRelatedByDebtor;
+        $transactionRelatedByDebtor->setTransaction_Debtor($this);
+    }
+
+    /**
+     * @param  ChildTransaction $transactionRelatedByDebtor The ChildTransaction object to remove.
+     * @return $this|ChildUsers The current object (for fluent API support)
+     */
+    public function removeTransactionRelatedByDebtor(ChildTransaction $transactionRelatedByDebtor)
+    {
+        if ($this->getTransactionsRelatedByDebtor()->contains($transactionRelatedByDebtor)) {
+            $pos = $this->collTransactionsRelatedByDebtor->search($transactionRelatedByDebtor);
+            $this->collTransactionsRelatedByDebtor->remove($pos);
+            if (null === $this->transactionsRelatedByDebtorScheduledForDeletion) {
+                $this->transactionsRelatedByDebtorScheduledForDeletion = clone $this->collTransactionsRelatedByDebtor;
+                $this->transactionsRelatedByDebtorScheduledForDeletion->clear();
+            }
+            $this->transactionsRelatedByDebtorScheduledForDeletion[]= clone $transactionRelatedByDebtor;
+            $transactionRelatedByDebtor->setTransaction_Debtor(null);
+        }
+
+        return $this;
     }
 
     /**
@@ -1050,8 +2208,32 @@ abstract class Users implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collDebtsRelatedByCreditor) {
+                foreach ($this->collDebtsRelatedByCreditor as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collDebtsRelatedByDebtor) {
+                foreach ($this->collDebtsRelatedByDebtor as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collTransactionsRelatedByCreditor) {
+                foreach ($this->collTransactionsRelatedByCreditor as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collTransactionsRelatedByDebtor) {
+                foreach ($this->collTransactionsRelatedByDebtor as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
+        $this->collDebtsRelatedByCreditor = null;
+        $this->collDebtsRelatedByDebtor = null;
+        $this->collTransactionsRelatedByCreditor = null;
+        $this->collTransactionsRelatedByDebtor = null;
     }
 
     /**

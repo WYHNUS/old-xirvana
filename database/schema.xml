@@ -10,10 +10,10 @@
         <column name="creditor" phpName="Creditor" type="VARCHAR" size="255" primaryKey="true" required="true" />
         <column name="debtor" phpName="Debtor" type="VARCHAR" size="255" primaryKey="true" required="true" />
         <column name="amount" phpName="Amount" type="DECIMAL" required="true"/>
-        <foreign-key foreignTable="Users">
+        <foreign-key foreignTable="Users" name="creditor_user" phpName="Debt_Creditor">
             <reference local="creditor" foreign="email" />
         </foreign-key>
-        <foreign-key foreignTable="Users" />
+        <foreign-key foreignTable="Users" name="debtor_user" phpName="Debt_Debtor">
             <reference local="debtor" foreign="email" />
         </foreign-key>
     </table>
@@ -25,10 +25,10 @@
         <column name="debtor" phpName="Debtor" type="VARCHAR" size="255" required="true" />
         <column name="amount" phpName="Amount" type="DECIMAL" required="true"/>
         <column name="time" phpName="Time" type="TIMESTAMP" />
-        <foreign-key foreignTable="Users">
+        <foreign-key foreignTable="Users" name="creditor" phpName="Transaction_Creditor">
             <reference local="creditor" foreign="email" />
         </foreign-key>
-        <foreign-key foreignTable="Users" />
+        <foreign-key foreignTable="Users" name="debtor" phpName="Transaction_Debtor">
             <reference local="debtor" foreign="email" />
         </foreign-key>
     </table>
