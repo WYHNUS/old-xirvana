@@ -44,6 +44,12 @@ xirvana.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: "/app/components/onlineJudgement/oj.detailView.html",
             resolve: {},
             controller: "ojDetailController"
+        })
+        .state("ompm", {
+            url: "/own_money_pay_money",
+            templateUrl: "/app/components/ompm/ompmView.html",
+            resolve: {},
+            controller: "ompmController"
         });
 
 	$urlRouterProvider.otherwise("/");

@@ -1,8 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <database name="xirvana" defaultIdMethod="native">
-  <table name="Users" idMethod="native" phpName="Users">
-    <column name="email" phpName="Email" type="VARCHAR" size="255" primaryKey="true" required="true"/>
-    <column name="name" phpName="Name" type="VARCHAR" size="255" required="true"/>
-    <column name="password" phpName="Password" type="VARCHAR" size="255" required="true"/>
-  </table>
+    <table name="Users" idMethod="native" phpName="Users">
+        <column name="email" phpName="Email" type="VARCHAR" size="255" primaryKey="true" required="true"/>
+        <column name="name" phpName="Name" type="VARCHAR" size="255" required="true"/>
+        <column name="password" phpName="Password" type="VARCHAR" size="255" required="true"/>
+    </table>
+    
+    <table name="Debt" idMethod="native" phpName="Debt">
+        <column name="creditor" phpName="Creditor" type="VARCHAR" size="255" primaryKey="true" required="true" />
+        <column name="debtor" phpName="Debtor" type="VARCHAR" size="255" primaryKey="true" required="true" />
+        <column name="amount" phpName="Amount" type="DECIMAL" required="true"/>
+        <foreign-key foreignTable="Users">
+            <reference local="creditor" foreign="email" />
+        </foreign-key>
+        <foreign-key foreignTable="Users" />
+            <reference local="debtor" foreign="email" />
+        </foreign-key>
+    </table>
+
+    <table name="Transaction" idMethod="native" phpname="Transaction">
+        <column name="id" phpName="Id" type="INTEGER" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" phpName="Name" type="VARCHAR" size="255" required="true" />
+        <column name="creditor" phpName="Creditor" type="VARCHAR" size="255" required="true" />
+        <column name="debtor" phpName="Debtor" type="VARCHAR" size="255" required="true" />
+        <column name="amount" phpName="Amount" type="DECIMAL" required="true"/>
+        <column name="time" phpName="Time" type="TIMESTAMP" />
+        <foreign-key foreignTable="Users">
+            <reference local="creditor" foreign="email" />
+        </foreign-key>
+        <foreign-key foreignTable="Users" />
+            <reference local="debtor" foreign="email" />
+        </foreign-key>
+    </table>
 </database>

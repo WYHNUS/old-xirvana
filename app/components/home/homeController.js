@@ -19,4 +19,9 @@ angular.module("xirvanaApp")
                 console.log("direct to Online Judgement state");
                 $state.go("onlineJudgement");
             }
+            
+            $scope.directOMPM = function () {
+                console.log("direct to Owe Money Pay Money");
+                $state.go("ompm");
+            }
 		}]);
