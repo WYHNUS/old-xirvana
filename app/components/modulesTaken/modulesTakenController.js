@@ -19,7 +19,7 @@ angular.module("xirvanaApp")
                     $scope.errorMsg = err;
                     console.log($scope.errorMsg);
                     $scope.isRetrieving = false;
-                })
+                });
             } else {
                 $scope.errorMsg = "We are trying our best to retrive the data, please wait a moment. :)";
             }

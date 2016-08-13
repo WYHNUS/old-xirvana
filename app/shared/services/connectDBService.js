@@ -5,6 +5,7 @@
     1. register a new user
     2. check if a user is registered
     3. crawl taken modules if nus login information is provided
+    4. pass data for owe money pay money app
 */
 
 angular.module("xirvanaApp")
@@ -53,10 +54,18 @@ angular.module("xirvanaApp")
             params.append("object", JSON.stringify(userInfo));
             return connect(url, params);
         }
+        
+        function submitTransaction(userInfo) {
+            var url = "app/backend/oweMoneyPayMoney.php";
+            var params = new FormData();
+            params.append("object", JSON.stringify(userInfo));
+            return connect(url, params);
+        }
 
 		return {
 			register : register,
             login : login,
-            crawlNUSTakenModule: crawlNUSTakenModule
+            crawlNUSTakenModule: crawlNUSTakenModule,
+            submitTransaction : submitTransaction
 		}
 	}]);
