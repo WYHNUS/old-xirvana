@@ -20,7 +20,7 @@ angular.module("xirvanaApp")
               	if (data == null) {
 					deferred.reject("data.error");
               	} else {
-                	if (data.status.toLowerCase() == "success") {
+                	if (data.status.toLowerCase() == "success" || data.status.toLowerCase() == "ok") {
 						deferred.resolve(data);
 	                } else {
 	                    deferred.reject(data.error);

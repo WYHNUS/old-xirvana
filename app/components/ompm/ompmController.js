@@ -32,29 +32,30 @@ angular.module("xirvanaApp")
             }
             
             // process data
-            $processed_data = {
+            var processed_data = {
                 name : $scope.data.name,
                 creditor : $scope.data.creditor,
                 debtors : []
-            }
+            };
             if ($scope.data.is_share) {
                 var amount = 1.0 * $scope.data.amount / debtors.length;
                 for (var i=0; i<debtors.length; i++) {
                     var debtor = {
                         email : debtors[i],
-                        amount : amount
+                        amount : "" + amount
                     };
-                    $processed_data.debtors.push(debtor);
+                    processed_data.debtors.push(debtor);
                 }
             }
-            console.log($processed_data);
+            console.log(processed_data);
             
             // pass data to php
-//            ConnectDBService.submitTransaction().then(function(response) {
-//                    console.log(response);
-//                }, function(err) {
-//                    $scope.errorMsg = err;
-//                    console.log($scope.errorMsg);
-//                });
+            ConnectDBService.submitTransaction(processed_data).then(function(response) {
+                console.log(response);
+            }, function(err) {
+                console.log(err);
+                $scope.errorMsg = err;
+                console.log($scope.errorMsg);
+            });
         }
     }]);
