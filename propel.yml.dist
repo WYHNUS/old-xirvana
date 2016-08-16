@@ -9,10 +9,10 @@
 propel:
     paths:
         # The directory where Propel expects to find your `schema.xml` file.
-        schemaDir: /Users/wangyanhao/Sites/Xirvana/public_html/database
+        schemaDir: /var/www/xirvana/public_html/database
 
         # The directory where Propel should output generated object model classes.
-        phpDir: /Users/wangyanhao/Sites/Xirvana/public_html/database
+        phpDir: /var/www/xirvana/public_html/database
 
 #   database:
 #       connections:
